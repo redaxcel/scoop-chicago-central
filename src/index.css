@@ -2,41 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Ice Cream Chicago Design System - Vibrant and Modern */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core ice cream inspired colors */
+    --background: 355 100% 99%;
+    --foreground: 340 15% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 355 50% 98%;
+    --card-foreground: 340 15% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 355 50% 98%;
+    --popover-foreground: 340 15% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Strawberry Pink Primary */
+    --primary: 350 85% 60%;
+    --primary-foreground: 355 100% 99%;
+    
+    /* Mint Green Secondary */
+    --secondary: 160 60% 75%;
+    --secondary-foreground: 160 25% 25%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Vanilla Cream Muted */
+    --muted: 45 60% 95%;
+    --muted-foreground: 340 15% 50%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Orange Sherbet Accent */
+    --accent: 25 90% 70%;
+    --accent-foreground: 25 25% 25%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 355 100% 99%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 350 30% 90%;
+    --input: 350 30% 95%;
+    --ring: 350 85% 60%;
 
-    --radius: 0.5rem;
+    /* Ice cream shop specific colors */
+    --ice-cream-pink: 350 85% 60%;
+    --ice-cream-mint: 160 60% 75%;
+    --ice-cream-vanilla: 45 60% 95%;
+    --ice-cream-orange: 25 90% 70%;
+    --ice-cream-cherry: 15 85% 65%;
+    --ice-cream-blueberry: 240 60% 70%;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(350 85% 60%) 0%, hsl(25 90% 70%) 50%, hsl(160 60% 75%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(355 50% 98%) 0%, hsl(45 60% 95%) 100%);
+    --gradient-scoop: radial-gradient(circle at 30% 30%, hsl(350 85% 70%), hsl(350 85% 55%));
+    
+    /* Shadows with ice cream colors */
+    --shadow-pink: 0 10px 30px -10px hsl(350 85% 60% / 0.3);
+    --shadow-mint: 0 10px 30px -10px hsl(160 60% 75% / 0.3);
+    --shadow-warm: 0 20px 40px -10px hsl(25 90% 70% / 0.2);
+    
+    /* Animations */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 1.5rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -102,4 +127,80 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Ice cream themed utilities and animations */
+@layer components {
+  .scoop-border {
+    border-radius: 50% 20% 50% 20%;
+  }
+  
+  .wavy-border {
+    border-radius: 25% 75% 25% 75% / 25% 25% 75% 75%;
+  }
+  
+  .ice-cream-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  .card-gradient {
+    background: var(--gradient-card);
+  }
+  
+  .scoop-shadow {
+    box-shadow: var(--shadow-pink);
+  }
+  
+  .mint-shadow {
+    box-shadow: var(--shadow-mint);
+  }
+  
+  .warm-shadow {
+    box-shadow: var(--shadow-warm);
+  }
+  
+  .bounce-hover {
+    transition: var(--transition-bounce);
+  }
+  
+  .bounce-hover:hover {
+    transform: translateY(-8px) scale(1.05);
+  }
+  
+  .scoop-float {
+    animation: scoopFloat 3s ease-in-out infinite;
+  }
+  
+  .hero-text {
+    background: linear-gradient(135deg, hsl(350 85% 60%), hsl(25 90% 70%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@layer utilities {
+  .animate-scoop-bounce {
+    animation: scoopBounce 2s ease-in-out infinite;
+  }
+  
+  .animate-gentle-float {
+    animation: gentleFloat 4s ease-in-out infinite;
+  }
+}
+
+@keyframes scoopFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes scoopBounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-4px); }
+}
+
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(2deg); }
 }

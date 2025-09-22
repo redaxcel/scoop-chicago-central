@@ -57,6 +57,25 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Ice cream themed colors
+        "ice-cream": {
+          pink: "hsl(var(--ice-cream-pink))",
+          mint: "hsl(var(--ice-cream-mint))",
+          vanilla: "hsl(var(--ice-cream-vanilla))",
+          orange: "hsl(var(--ice-cream-orange))",
+          cherry: "hsl(var(--ice-cream-cherry))",
+          blueberry: "hsl(var(--ice-cream-blueberry))",
+        },
+      },
+      backgroundImage: {
+        "gradient-hero": "var(--gradient-hero)",
+        "gradient-card": "var(--gradient-card)",
+        "gradient-scoop": "var(--gradient-scoop)",
+      },
+      boxShadow: {
+        "pink": "var(--shadow-pink)",
+        "mint": "var(--shadow-mint)",
+        "warm": "var(--shadow-warm)",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -80,10 +99,31 @@ export default {
             height: "0",
           },
         },
+        "scoop-float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "scoop-bounce": {
+          "0%, 20%, 50%, 80%, 100%": { transform: "translateY(0)" },
+          "40%": { transform: "translateY(-8px)" },
+          "60%": { transform: "translateY(-4px)" },
+        },
+        "gentle-float": {
+          "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+          "50%": { transform: "translateY(-15px) rotate(2deg)" },
+        },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(30px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "scoop-float": "scoop-float 3s ease-in-out infinite",
+        "scoop-bounce": "scoop-bounce 2s ease-in-out infinite",
+        "gentle-float": "gentle-float 4s ease-in-out infinite",
+        "fade-in-up": "fade-in-up 0.6s ease-out",
       },
     },
   },
