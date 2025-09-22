@@ -14,7 +14,363 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_inquiries: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          status: string | null
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          status?: string | null
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          status?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      coupons: {
+        Row: {
+          coupon_code: string | null
+          created_at: string
+          current_usage: number | null
+          description: string
+          discount_amount: number | null
+          discount_percent: number | null
+          id: string
+          is_active: boolean | null
+          shop_id: string
+          terms_conditions: string | null
+          title: string
+          updated_at: string
+          usage_limit: number | null
+          valid_from: string
+          valid_until: string
+        }
+        Insert: {
+          coupon_code?: string | null
+          created_at?: string
+          current_usage?: number | null
+          description: string
+          discount_amount?: number | null
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean | null
+          shop_id: string
+          terms_conditions?: string | null
+          title: string
+          updated_at?: string
+          usage_limit?: number | null
+          valid_from?: string
+          valid_until: string
+        }
+        Update: {
+          coupon_code?: string | null
+          created_at?: string
+          current_usage?: number | null
+          description?: string
+          discount_amount?: number | null
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean | null
+          shop_id?: string
+          terms_conditions?: string | null
+          title?: string
+          updated_at?: string
+          usage_limit?: number | null
+          valid_from?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "ice_cream_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_date: string | null
+          event_date: string
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          location: string | null
+          registration_url: string | null
+          shop_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          event_date: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location?: string | null
+          registration_url?: string | null
+          shop_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          event_date?: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location?: string | null
+          registration_url?: string | null
+          shop_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "ice_cream_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ice_cream_shops: {
+        Row: {
+          address: string
+          amenities: string[] | null
+          city: string
+          created_at: string
+          description: string | null
+          facebook_url: string | null
+          featured: boolean | null
+          gallery_images: string[] | null
+          hours: Json | null
+          id: string
+          image_url: string | null
+          instagram_url: string | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          owner_email: string | null
+          owner_name: string | null
+          phone: string | null
+          pricing: Database["public"]["Enums"]["price_level"] | null
+          state: string
+          status: Database["public"]["Enums"]["shop_status"] | null
+          twitter_url: string | null
+          updated_at: string
+          website_url: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address: string
+          amenities?: string[] | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          facebook_url?: string | null
+          featured?: boolean | null
+          gallery_images?: string[] | null
+          hours?: Json | null
+          id?: string
+          image_url?: string | null
+          instagram_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          owner_email?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          pricing?: Database["public"]["Enums"]["price_level"] | null
+          state?: string
+          status?: Database["public"]["Enums"]["shop_status"] | null
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string
+          amenities?: string[] | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          facebook_url?: string | null
+          featured?: boolean | null
+          gallery_images?: string[] | null
+          hours?: Json | null
+          id?: string
+          image_url?: string | null
+          instagram_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          owner_email?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          pricing?: Database["public"]["Enums"]["price_level"] | null
+          state?: string
+          status?: Database["public"]["Enums"]["shop_status"] | null
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          role: Database["public"]["Enums"]["user_role"] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          content: string
+          created_at: string
+          helpful_count: number | null
+          id: string
+          rating: number
+          shop_id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          helpful_count?: number | null
+          id?: string
+          rating: number
+          shop_id: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          helpful_count?: number | null
+          id?: string
+          rating?: number
+          shop_id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "ice_cream_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_submissions: {
+        Row: {
+          address: string
+          business_name: string
+          city: string
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          id: string
+          notes: string | null
+          state: string
+          status: string | null
+          website_url: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address: string
+          business_name: string
+          city?: string
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          state?: string
+          status?: string | null
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string
+          business_name?: string
+          city?: string
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          state?: string
+          status?: string | null
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +379,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      price_level: "$" | "$$" | "$$$" | "$$$$"
+      shop_status: "active" | "pending" | "closed" | "suspended"
+      user_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +508,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      price_level: ["$", "$$", "$$$", "$$$$"],
+      shop_status: ["active", "pending", "closed", "suspended"],
+      user_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
