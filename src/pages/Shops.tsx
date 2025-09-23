@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Filter, MapPin, Star } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { ShopCard } from "@/components/ShopCard";
+import { IceCreamMap } from "@/components/IceCreamMap";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -230,20 +231,21 @@ const Shops = () => {
         </div>
       </section>
 
-      {/* Map Section Placeholder */}
+      {/* Map Section */}
       <section id="map" className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-4">Shop Locations</h2>
             <p className="text-muted-foreground">
-              Interactive map coming soon! Find shops near you.
+              Find ice cream shops near you with our interactive map
             </p>
           </div>
-          <div className="h-96 bg-gradient-card rounded-2xl flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <p className="text-lg text-muted-foreground">Interactive Map Loading...</p>
-            </div>
+          <div className="h-96">
+            <IceCreamMap 
+              shops={filteredShops} 
+              onShopSelect={(shopId) => window.location.href = `/shop/${shopId}`}
+              height="400px"
+            />
           </div>
         </div>
       </section>

@@ -178,6 +178,7 @@ export type Database = {
           name: string
           owner_email: string | null
           owner_name: string | null
+          owner_profile_id: string | null
           phone: string | null
           pricing: Database["public"]["Enums"]["price_level"] | null
           state: string
@@ -205,6 +206,7 @@ export type Database = {
           name: string
           owner_email?: string | null
           owner_name?: string | null
+          owner_profile_id?: string | null
           phone?: string | null
           pricing?: Database["public"]["Enums"]["price_level"] | null
           state?: string
@@ -232,6 +234,7 @@ export type Database = {
           name?: string
           owner_email?: string | null
           owner_name?: string | null
+          owner_profile_id?: string | null
           phone?: string | null
           pricing?: Database["public"]["Enums"]["price_level"] | null
           state?: string
@@ -241,7 +244,15 @@ export type Database = {
           website_url?: string | null
           zip_code?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ice_cream_shops_owner_profile_id_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -251,6 +262,7 @@ export type Database = {
           display_name: string | null
           id: string
           role: Database["public"]["Enums"]["user_role"] | null
+          shop_id: string | null
           updated_at: string
           user_id: string
         }
@@ -261,6 +273,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           role?: Database["public"]["Enums"]["user_role"] | null
+          shop_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -271,10 +284,19 @@ export type Database = {
           display_name?: string | null
           id?: string
           role?: Database["public"]["Enums"]["user_role"] | null
+          shop_id?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "ice_cream_shops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
