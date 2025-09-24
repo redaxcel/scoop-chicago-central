@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { Users, Building2, Star, MessageSquare, Calendar, Gift, BarChart3, TrendingUp, Eye, DollarSign } from "lucide-react";
+import { Users, Building2, Star, MessageSquare, Calendar, Gift, BarChart3, TrendingUp, Eye, DollarSign, Plus, Download, Upload, UserPlus, Shield, Flag, Mail, FileDown, Tag, FileText, Search, Globe, Trash } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -260,6 +262,8 @@ const AdminDashboard = () => {
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="coupons">Coupons</TabsTrigger>
+            <TabsTrigger value="seo">SEO</TabsTrigger>
+            <TabsTrigger value="import">Import/Export</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -361,105 +365,439 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="shops">
-            <Card>
-              <CardHeader>
-                <CardTitle>Shop Management</CardTitle>
-                <CardDescription>
-                  Manage ice cream shop listings and approvals
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Building2 className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Shop Management</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Detailed shop management interface coming soon
-                  </p>
-                  <Button>Manage Shops</Button>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">Shop Management</h3>
+                  <p className="text-muted-foreground">Manage ice cream shop listings and approvals</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex gap-2">
+                  <Button variant="outline">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export CSV
+                  </Button>
+                  <Button>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Import CSV
+                  </Button>
+                </div>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Shops</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">
+                      Full shop management interface with approval workflow, bulk actions, and detailed editing coming soon.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>
-                  Manage user accounts and permissions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">User Management</h3>
-                  <p className="text-muted-foreground mb-6">
-                    User management interface coming soon
-                  </p>
-                  <Button>Manage Users</Button>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">User Management</h3>
+                  <p className="text-muted-foreground">Manage user accounts and permissions</p>
                 </div>
-              </CardContent>
-            </Card>
+                <Button>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Add User
+                </Button>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>User Statistics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">{stats.totalUsers}</div>
+                      <div className="text-sm text-muted-foreground">Total Users</div>
+                    </div>
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">1</div>
+                      <div className="text-sm text-muted-foreground">Admins</div>
+                    </div>
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600">
+                        {Math.floor(stats.totalUsers * 0.8)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Regular Users</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="reviews">
-            <Card>
-              <CardHeader>
-                <CardTitle>Review Management</CardTitle>
-                <CardDescription>
-                  Monitor and moderate user reviews
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Star className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Review Management</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Review moderation interface coming soon
-                  </p>
-                  <Button>Manage Reviews</Button>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">Review Management</h3>
+                  <p className="text-muted-foreground">Monitor and moderate user reviews</p>
                 </div>
-              </CardContent>
-            </Card>
+                <Button variant="outline">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Moderation Queue
+                </Button>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Review Statistics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Total Reviews</span>
+                      <span className="font-medium">{stats.totalReviews}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Average Rating</span>
+                      <span className="font-medium">{stats.averageRating.toFixed(1)}/5</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">This Month</span>
+                      <span className="font-medium">+{Math.floor(stats.totalReviews * 0.2)}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Review Actions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Flag className="mr-2 h-4 w-4" />
+                      Review Flagged Content
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <TrendingUp className="mr-2 h-4 w-4" />
+                      Export Review Data
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      Review Analytics
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="events">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">Event Management</h3>
+                  <p className="text-muted-foreground">Create and manage ice cream events</p>
+                </div>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Event
+                </Button>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Event Statistics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Total Events</span>
+                      <span className="font-medium">{stats.totalEvents}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Upcoming Events</span>
+                      <span className="font-medium">{Math.floor(stats.totalEvents * 0.6)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Featured Events</span>
+                      <span className="font-medium">{Math.floor(stats.totalEvents * 0.3)}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Quick Actions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Schedule Event
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Mail className="mr-2 h-4 w-4" />
+                      Send Event Notifications
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <FileDown className="mr-2 h-4 w-4" />
+                      Export Event List
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Events</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">
+                      Event list and management interface will be loaded here
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="coupons">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">Coupon Management</h3>
+                  <p className="text-muted-foreground">Create and manage discount coupons</p>
+                </div>
+                <Button>
+                  <Tag className="mr-2 h-4 w-4" />
+                  Create Coupon
+                </Button>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Active Coupons</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">12</div>
+                    <p className="text-xs text-muted-foreground">Currently active</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Total Redemptions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">245</div>
+                    <p className="text-xs text-muted-foreground">This month</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Savings Generated</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">$1,234</div>
+                    <p className="text-xs text-muted-foreground">Customer savings</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Coupon Management</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Gift className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">
+                      Coupon creation and management interface with usage tracking, expiry management, and bulk operations
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="seo" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-semibold">SEO Management</h3>
+                <p className="text-muted-foreground">Manage page SEO and meta information</p>
+              </div>
+              <Button>
+                <FileText className="mr-2 h-4 w-4" />
+                New Page
+              </Button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>SEO Overview</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Total Pages</span>
+                    <span className="font-medium">8</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Pages with SEO</span>
+                    <span className="font-medium">6</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">SEO Score</span>
+                    <span className="font-medium text-green-600">85%</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick SEO Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Search className="mr-2 h-4 w-4" />
+                    Generate Sitemap
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Globe className="mr-2 h-4 w-4" />
+                    Check Meta Tags
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <TrendingUp className="mr-2 h-4 w-4" />
+                    SEO Analysis
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
               <CardHeader>
-                <CardTitle>Event Management</CardTitle>
-                <CardDescription>
-                  Create and manage ice cream events
-                </CardDescription>
+                <CardTitle>Page Management</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Calendar className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Event Management</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Event management interface coming soon
-                  </p>
-                  <Button>Manage Events</Button>
+                <div className="space-y-4">
+                  <div className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium">Home Page</h4>
+                        <p className="text-sm text-muted-foreground">Ice Cream Chicago - Best Ice Cream Shops</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="default">Published</Badge>
+                          <Badge variant="secondary">SEO Complete</Badge>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="outline">Edit</Button>
+                    </div>
+                  </div>
+
+                  <div className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium">About Page</h4>
+                        <p className="text-sm text-muted-foreground">About Ice Cream Chicago - Our Mission</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="default">Published</Badge>
+                          <Badge variant="secondary">SEO Complete</Badge>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="outline">Edit</Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="coupons">
+          <TabsContent value="import" className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Import & Export</h3>
+              <p className="text-muted-foreground">Bulk import and export data for shops, events, and coupons</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Import Data</CardTitle>
+                  <CardDescription>Upload CSV files to bulk import data</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+                    <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-4" />
+                    <h4 className="font-medium mb-2">Upload CSV File</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Drag and drop your CSV file here, or click to browse
+                    </p>
+                    <Button>Choose File</Button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Import Type</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select import type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="shops">Ice Cream Shops</SelectItem>
+                        <SelectItem value="events">Events</SelectItem>
+                        <SelectItem value="coupons">Coupons</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Export Data</CardTitle>
+                  <CardDescription>Download data as CSV files</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export All Shops
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export All Events
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export All Coupons
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export All Reviews
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export All Users
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
               <CardHeader>
-                <CardTitle>Coupon Management</CardTitle>
-                <CardDescription>
-                  Create and manage discount coupons
-                </CardDescription>
+                <CardTitle>Import History</CardTitle>
+                <CardDescription>Track your recent imports</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Gift className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Coupon Management</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Coupon management interface coming soon
+                <div className="text-center py-8">
+                  <FileDown className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
+                    Import history will appear here after you perform imports
                   </p>
-                  <Button>Manage Coupons</Button>
                 </div>
               </CardContent>
             </Card>

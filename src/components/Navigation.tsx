@@ -2,11 +2,68 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, MapPin, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import iceCreamScoop from "@/assets/ice-cream-scoop.jpg";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const location = useLocation();
+
+  useEffect(() => {
+    checkAuth();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        checkAuth();
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setProfile(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+        setProfile(profile);
+      }
+    } catch (error) {
+      console.error('Error checking auth:', error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
+  };
+
+  const getDashboardLink = () => {
+    if (!profile) return null;
+    
+    switch (profile.role) {
+      case 'admin':
+        return { href: '/admin', label: 'Admin Panel' };
+      case 'user':
+        // Check if user owns a shop
+        return { href: '/user-dashboard', label: 'My Dashboard' };
+      default:
+        return { href: '/user-dashboard', label: 'Dashboard' };
+    }
+  };
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -76,12 +133,27 @@ export const Navigation = () => {
                 </Link>
               ))}
               <div className="flex gap-2">
-                <Button variant="outline" asChild>
-                  <Link to="/auth">Login</Link>
-                </Button>
-                <Button asChild>
-                  <Link to="/submit-shop">Submit Shop</Link>
-                </Button>
+                {user ? (
+                  <>
+                    {getDashboardLink() && (
+                      <Button variant="outline" asChild>
+                        <Link to={getDashboardLink()!.href}>{getDashboardLink()!.label}</Link>
+                      </Button>
+                    )}
+                    <Button variant="outline" onClick={handleSignOut}>
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" asChild>
+                      <Link to="/auth">Login</Link>
+                    </Button>
+                    <Button asChild>
+                      <Link to="/submit-shop">Submit Shop</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
 
@@ -117,12 +189,32 @@ export const Navigation = () => {
                   </Link>
                 ))}
                 <div className="flex flex-col gap-2 pt-4 border-t">
-                  <Button variant="outline" asChild>
-                    <Link to="/auth" onClick={() => setIsOpen(false)}>Login</Link>
-                  </Button>
-                  <Button asChild>
-                    <Link to="/submit-shop" onClick={() => setIsOpen(false)}>Submit Shop</Link>
-                  </Button>
+                  {user ? (
+                    <>
+                      {getDashboardLink() && (
+                        <Button variant="outline" asChild>
+                          <Link to={getDashboardLink()!.href} onClick={() => setIsOpen(false)}>
+                            {getDashboardLink()!.label}
+                          </Link>
+                        </Button>
+                      )}
+                      <Button variant="outline" onClick={() => {
+                        handleSignOut();
+                        setIsOpen(false);
+                      }}>
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="outline" asChild>
+                        <Link to="/auth" onClick={() => setIsOpen(false)}>Login</Link>
+                      </Button>
+                      <Button asChild>
+                        <Link to="/submit-shop" onClick={() => setIsOpen(false)}>Submit Shop</Link>
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

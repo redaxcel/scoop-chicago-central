@@ -13,6 +13,8 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import SubmitShop from "./pages/SubmitShop";
 import AdminDashboard from "./pages/AdminDashboard";
+import ShopDashboard from "./pages/ShopDashboard";
+import UserDashboard from "./pages/UserDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +35,8 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/submit-shop" element={<SubmitShop />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/shop-dashboard" element={<ShopDashboard />} />
+          <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

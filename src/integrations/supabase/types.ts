@@ -254,6 +254,109 @@ export type Database = {
           },
         ]
       }
+      import_logs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          errors: string[] | null
+          failed_records: number
+          filename: string
+          id: string
+          import_type: string
+          successful_records: number
+          total_records: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          errors?: string[] | null
+          failed_records?: number
+          filename: string
+          id?: string
+          import_type: string
+          successful_records?: number
+          total_records?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          errors?: string[] | null
+          failed_records?: number
+          filename?: string
+          id?: string
+          import_type?: string
+          successful_records?: number
+          total_records?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_logs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pages: {
+        Row: {
+          content: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_published: boolean | null
+          meta_description: string | null
+          meta_keywords: string | null
+          og_description: string | null
+          og_image: string | null
+          og_title: string | null
+          page_type: Database["public"]["Enums"]["page_type"] | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean | null
+          meta_description?: string | null
+          meta_keywords?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          page_type?: Database["public"]["Enums"]["page_type"] | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean | null
+          meta_description?: string | null
+          meta_keywords?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          page_type?: Database["public"]["Enums"]["page_type"] | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pages_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -401,6 +504,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      page_type: "home" | "about" | "contact" | "custom"
       price_level: "$" | "$$" | "$$$" | "$$$$"
       shop_status: "active" | "pending" | "closed" | "suspended"
       user_role: "admin" | "moderator" | "user"
@@ -531,6 +635,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      page_type: ["home", "about", "contact", "custom"],
       price_level: ["$", "$$", "$$$", "$$$$"],
       shop_status: ["active", "pending", "closed", "suspended"],
       user_role: ["admin", "moderator", "user"],
