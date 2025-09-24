@@ -40,9 +40,9 @@ interface Review {
   content: string;
   created_at: string;
   user_id: string;
-  profiles: {
-    display_name: string;
-  };
+  profiles?: {
+    display_name?: string;
+  } | null;
 }
 
 const ShopDetail = () => {
@@ -91,21 +91,38 @@ const ShopDetail = () => {
 
   const fetchReviews = async () => {
     try {
-      const { data, error } = await supabase
+      // First get reviews
+      const { data: reviewsData, error } = await supabase
         .from('reviews')
-        .select(`
-          *,
-          profiles (
-            display_name
-          )
-        `)
+        .select('*')
         .eq('shop_id', id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setReviews(data || []);
+
+      if (reviewsData && reviewsData.length > 0) {
+        // Get unique user IDs
+        const userIds = [...new Set(reviewsData.map(review => review.user_id))];
+        
+        // Fetch profiles for these users
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('user_id, display_name')
+          .in('user_id', userIds);
+
+        // Combine reviews with profile data
+        const reviewsWithProfiles = reviewsData.map(review => ({
+          ...review,
+          profiles: profilesData?.find(profile => profile.user_id === review.user_id) || null
+        }));
+
+        setReviews(reviewsWithProfiles);
+      } else {
+        setReviews([]);
+      }
     } catch (error) {
       console.error('Error fetching reviews:', error);
+      setReviews([]);
     }
   };
 

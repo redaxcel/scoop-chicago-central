@@ -113,11 +113,30 @@ const AdminDashboard = () => {
         .order('created_at', { ascending: false })
         .limit(5);
 
+      // Get reviews without the problematic join
       const { data: recentReviews } = await supabase
         .from('reviews')
-        .select('id, title, content, created_at, profiles(display_name)')
+        .select('id, title, content, created_at, user_id')
         .order('created_at', { ascending: false })
         .limit(5);
+
+      // Get profiles separately if needed
+      let reviewsWithProfiles: any[] = [];
+      if (recentReviews && recentReviews.length > 0) {
+        const userIds = [...new Set(recentReviews.map(r => r.user_id))];
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, display_name')
+          .in('user_id', userIds);
+
+        reviewsWithProfiles = recentReviews.map(review => ({
+          id: review.id,
+          type: 'review' as const,
+          title: `New review by ${profiles?.find(p => p.user_id === review.user_id)?.display_name || 'Anonymous'}`,
+          description: review.title || review.content.slice(0, 50) + '...',
+          created_at: review.created_at
+        }));
+      }
 
       const activity: RecentActivity[] = [
         ...(recentShops?.map(shop => ({
@@ -128,13 +147,7 @@ const AdminDashboard = () => {
           created_at: shop.created_at,
           status: shop.status
         })) || []),
-        ...(recentReviews?.map(review => ({
-          id: review.id,
-          type: 'review' as const,
-          title: `New review by ${review.profiles?.display_name || 'Anonymous'}`,
-          description: review.title || review.content.slice(0, 50) + '...',
-          created_at: review.created_at
-        })) || [])
+        ...reviewsWithProfiles
       ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 10);
 
       setRecentActivity(activity);
