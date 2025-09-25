@@ -1,0 +1,3 @@
+name,address,city,state,zip_code,phone,pricing,website_url,facebook_url,instagram_url,description,status
+Sweet Scoops,123 Main St,Chicago,IL,60601,(312) 555-1234,$$,https://sweetscoops.com,https://facebook.com/sweetscoops,https://instagram.com/sweetscoops,Delicious homemade ice cream in downtown Chicago,active
+Creamy Dreams,456 Oak Ave,Chicago,IL,60602,(312) 555-5678,$$$,https://creamydreams.com,,,Premium artisanal ice cream with unique flavors,pending

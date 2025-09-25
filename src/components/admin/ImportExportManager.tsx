@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -44,30 +44,13 @@ export const ImportExportManager = () => {
   const [importing, setImporting] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  const sampleCSV = useMemo(() => {
-    const headers = columnsByType[importType];
-    const sampleRow: AnyRow = Object.fromEntries(headers.map(h => [h, '']));
-    if (importType === 'shops') {
-      sampleRow.name = 'Sweet Scoops';
-      sampleRow.address = '123 Main St';
-      sampleRow.city = 'Chicago';
-      sampleRow.state = 'IL';
-      sampleRow.zip_code = '60601';
-      sampleRow.pricing = '$$';
-      sampleRow.status = 'pending';
-    }
-    if (importType === 'events') {
-      sampleRow.title = 'Summer Ice Cream Fest';
-      sampleRow.event_date = new Date().toISOString();
-    }
-    if (importType === 'coupons') {
-      sampleRow.title = '10% OFF';
-      sampleRow.discount_percent = 10;
-      sampleRow.valid_until = new Date(Date.now()+7*24*60*60*1000).toISOString().slice(0,10);
-      sampleRow.description = 'Save on any scoop!';
-    }
-    return toCSV([sampleRow], headers);
-  }, [importType]);
+  const downloadSampleCSV = () => {
+    const filename = `sample-${importType}.csv`;
+    const link = document.createElement('a');
+    link.href = `/${filename}`;
+    link.download = filename;
+    link.click();
+  };
 
   const handleChooseFile = () => fileRef.current?.click();
 
@@ -94,23 +77,49 @@ export const ImportExportManager = () => {
     setImporting(true);
     try {
       const allowed = columnsByType[importType];
-      const cleaned = rows.map(r => Object.fromEntries(Object.entries(r).filter(([k]) => allowed.includes(k))));
-
+      
       if (importType === 'shops') {
-        const { error } = await supabase.from('ice_cream_shops').insert(cleaned);
+        const cleaned = rows.map(r => {
+          const shop = Object.fromEntries(Object.entries(r).filter(([k]) => allowed.includes(k)));
+          // Ensure required fields
+          if (!shop.name || !shop.address) {
+            throw new Error('Missing required fields: name and address are required for shops');
+          }
+          return shop;
+        });
+        const { error } = await supabase.from('ice_cream_shops').insert(cleaned as any);
         if (error) throw error;
+        
       } else if (importType === 'events') {
-        const { error } = await supabase.from('events').insert(cleaned);
+        const cleaned = rows.map(r => {
+          const event = Object.fromEntries(Object.entries(r).filter(([k]) => allowed.includes(k)));
+          // Ensure required fields
+          if (!event.title || !event.event_date) {
+            throw new Error('Missing required fields: title and event_date are required for events');
+          }
+          return event;
+        });
+        const { error } = await supabase.from('events').insert(cleaned as any);
         if (error) throw error;
+        
       } else if (importType === 'coupons') {
-        const { error } = await supabase.from('coupons').insert(cleaned);
+        const cleaned = rows.map(r => {
+          const coupon = Object.fromEntries(Object.entries(r).filter(([k]) => allowed.includes(k)));
+          // Ensure required fields and add platform shop_id
+          if (!coupon.title || !coupon.description || !coupon.valid_until) {
+            throw new Error('Missing required fields: title, description, and valid_until are required for coupons');
+          }
+          coupon.shop_id = '00000000-0000-0000-0000-000000000000'; // Platform-wide coupon
+          return coupon;
+        });
+        const { error } = await supabase.from('coupons').insert(cleaned as any);
         if (error) throw error;
       }
 
       toast({ title: 'Import complete', description: `${rows.length} rows imported` });
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      toast({ title: 'Import failed', description: 'Please verify your CSV columns match the template', variant: 'destructive' });
+      toast({ title: 'Import failed', description: e.message || 'Please verify your CSV columns match the template', variant: 'destructive' });
     } finally {
       setImporting(false);
     }
@@ -165,7 +174,7 @@ export const ImportExportManager = () => {
             </div>
             <div className="space-y-2">
               <Label>Sample CSV</Label>
-              <Button variant="outline" onClick={() => download(`${importType}-sample.csv`, sampleCSV)}>
+              <Button variant="outline" onClick={downloadSampleCSV}>
                 <FileDown className="h-4 w-4 mr-1"/> Download Template
               </Button>
             </div>

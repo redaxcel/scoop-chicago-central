@@ -58,6 +58,7 @@ export const CouponsManager = () => {
       discount_amount: newCoupon.discount_amount ?? null,
       valid_until: newCoupon.valid_until,
       is_active: true,
+      shop_id: '00000000-0000-0000-0000-000000000000', // Platform-wide coupon
     });
     setCreating(false);
     if (error) {

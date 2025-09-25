@@ -57,11 +57,8 @@ export const Navigation = () => {
     switch (profile.role) {
       case 'admin':
         return { href: '/admin', label: 'Admin Panel' };
-      case 'user':
-        // Check if user owns a shop
-        return { href: '/user-dashboard', label: 'My Dashboard' };
       default:
-        return { href: '/user-dashboard', label: 'Dashboard' };
+        return { href: profile.shop_id ? '/shop-dashboard' : '/user-dashboard', label: profile.shop_id ? 'Shop Dashboard' : 'Dashboard' };
     }
   };
 
