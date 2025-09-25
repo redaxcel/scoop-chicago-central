@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-ice-cream.jpg";
 import { Link } from "react-router-dom";
+import { Footer } from "@/components/Footer";
 
 interface Shop {
   id: string;
@@ -155,17 +156,53 @@ const Index = () => {
 
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(6)].map((_, i) => (
+              {[...Array(3)].map((_, i) => (
                 <div key={i} className="h-96 bg-muted rounded-2xl animate-pulse"></div>
               ))}
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {shops.map((shop) => (
+              {shops.slice(0, 3).map((shop) => (
                 <ShopCard key={shop.id} shop={shop} />
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* New Listings */}
+      <section className="py-16 bg-secondary/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">New Listings</h2>
+            <p className="text-xl text-muted-foreground">
+              Fresh scoops just added to our directory
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {shops.slice(1, 4).map((shop) => (
+              <ShopCard key={shop.id} shop={shop} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Highly Rated */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">Highly Rated</h2>
+            <p className="text-xl text-muted-foreground">
+              Top-rated shops loved by ice cream enthusiasts
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {shops.slice(2, 5).map((shop) => (
+              <ShopCard key={shop.id} shop={shop} />
+            ))}
+          </div>
 
           <div className="text-center mt-12">
             <Button size="lg" variant="outline" asChild>
@@ -197,6 +234,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };

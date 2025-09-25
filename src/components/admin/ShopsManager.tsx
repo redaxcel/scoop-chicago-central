@@ -20,6 +20,11 @@ interface ShopRow {
   website_url?: string | null;
   address: string;
   description?: string | null;
+  hours?: any;
+  amenities?: string[];
+  latitude?: number | null;
+  longitude?: number | null;
+  featured?: boolean;
 }
 
 const statusBadgeVariant = (status: ShopRow["status"]) => {
@@ -54,7 +59,7 @@ export const ShopsManager = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("ice_cream_shops")
-      .select("id,name,status,city,state,phone,pricing,website_url,address,description")
+      .select("id,name,status,city,state,phone,pricing,website_url,address,description,hours,amenities,latitude,longitude,featured")
       .order("created_at", { ascending: false });
     if (error) {
       console.error(error);
@@ -138,6 +143,7 @@ export const ShopsManager = () => {
                     <th className="py-2 pr-4">Name</th>
                     <th className="py-2 pr-4">Location</th>
                     <th className="py-2 pr-4">Phone</th>
+                    <th className="py-2 pr-4">Featured</th>
                     <th className="py-2 pr-4">Status</th>
                     <th className="py-2 pr-4 text-right">Actions</th>
                   </tr>
@@ -148,6 +154,11 @@ export const ShopsManager = () => {
                       <td className="py-2 pr-4 font-medium">{s.name}</td>
                       <td className="py-2 pr-4">{s.city}, {s.state}</td>
                       <td className="py-2 pr-4">{s.phone || "-"}</td>
+                      <td className="py-2 pr-4">
+                        <Badge variant={s.featured ? "default" : "outline"}>
+                          {s.featured ? "Featured" : "Standard"}
+                        </Badge>
+                      </td>
                       <td className="py-2 pr-4">
                         <Badge variant={statusBadgeVariant(s.status)} className="capitalize">{s.status}</Badge>
                       </td>

@@ -14,7 +14,7 @@ type ImportType = 'shops' | 'events' | 'coupons';
 
 const columnsByType: Record<ImportType, string[]> = {
   shops: [
-    'name','address','city','state','zip_code','phone','pricing','website_url','facebook_url','instagram_url','description','status'
+    'name','address','city','state','zip_code','phone','pricing','website_url','facebook_url','instagram_url','description','status','hours','amenities','latitude','longitude','featured'
   ],
   events: [
     'title','event_date','end_date','location','is_featured','image_url','registration_url'

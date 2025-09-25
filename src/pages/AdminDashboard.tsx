@@ -14,6 +14,7 @@ import ShopsManager from "@/components/admin/ShopsManager";
 import EventsManager from "@/components/admin/EventsManager";
 import CouponsManager from "@/components/admin/CouponsManager";
 import PagesManager from "@/components/admin/PagesManager";
+import ReviewsManager from "@/components/admin/ReviewsManager";
 import ImportExportManager from "@/components/admin/ImportExportManager";
 
 interface DashboardStats {
