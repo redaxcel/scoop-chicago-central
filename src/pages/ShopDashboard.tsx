@@ -32,6 +32,7 @@ interface Shop {
   hours?: any;
   status: "active" | "pending" | "closed" | "suspended";
   gallery_images?: string[];
+  featured?: boolean;
 }
 
 interface Review {
@@ -342,20 +343,24 @@ const ShopDashboard = () => {
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button className="w-full justify-start" variant="outline">
-                    <Camera className="mr-2 h-4 w-4" />
-                    Upload Photos
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Update Hours
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Respond to Reviews
-                  </Button>
-                </CardContent>
+              <CardContent className="space-y-3">
+                <Button className="w-full justify-start" variant="outline">
+                  <Camera className="mr-2 h-4 w-4" />
+                  Upload Photos
+                </Button>
+                <Button className="w-full justify-start" variant="outline">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Update Hours
+                </Button>
+                <Button className="w-full justify-start" variant="outline">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Respond to Reviews
+                </Button>
+                <Button className="w-full justify-start" variant="outline">
+                  <MapPin className="mr-2 h-4 w-4" />
+                  Update Location
+                </Button>
+              </CardContent>
               </Card>
             </div>
           </TabsContent>
@@ -433,6 +438,115 @@ const ShopDashboard = () => {
                       value={shop.facebook_url || ''}
                       onChange={(e) => setShop({ ...shop, facebook_url: e.target.value })}
                     />
+                  </div>
+                </div>
+
+                {/* Hours, Amenities, Location, Featured Section */}
+                <div className="space-y-6">
+                  {/* Hours Section */}
+                  <div className="space-y-2">
+                    <Label>Business Hours</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => (
+                        <div key={day} className="flex items-center gap-2">
+                          <Label className="w-20 capitalize text-sm">{day}:</Label>
+                          <Input
+                            placeholder="e.g., 9:00 AM - 9:00 PM"
+                            value={shop.hours?.[day] || ''}
+                            onChange={(e) => setShop({ 
+                              ...shop, 
+                              hours: { ...shop.hours, [day]: e.target.value }
+                            })}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Amenities Section */}
+                  <div className="space-y-2">
+                    <Label>Amenities</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {['Parking', 'WiFi', 'Cards Accepted', 'Outdoor Seating', 'Family Friendly', 'Pet Friendly'].map((amenity) => (
+                        <label key={amenity} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={shop.amenities?.includes(amenity.toLowerCase().replace(' ', '_')) || false}
+                            onChange={(e) => {
+                              const amenityKey = amenity.toLowerCase().replace(' ', '_');
+                              const currentAmenities = shop.amenities || [];
+                              if (e.target.checked) {
+                                setShop({
+                                  ...shop,
+                                  amenities: [...currentAmenities, amenityKey]
+                                });
+                              } else {
+                                setShop({
+                                  ...shop,
+                                  amenities: currentAmenities.filter(a => a !== amenityKey)
+                                });
+                              }
+                            }}
+                            className="rounded border-border"
+                          />
+                          <span className="text-sm">{amenity}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Location Section */}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="address">Address</Label>
+                      <Input
+                        id="address"
+                        value={shop.address}
+                        onChange={(e) => setShop({ ...shop, address: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                        id="city"
+                        value={shop.city}
+                        onChange={(e) => setShop({ ...shop, city: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Input
+                        id="state"
+                        value={shop.state}
+                        onChange={(e) => setShop({ ...shop, state: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="zip">ZIP Code</Label>
+                      <Input
+                        id="zip"
+                        value={shop.zip_code || ''}
+                        onChange={(e) => setShop({ ...shop, zip_code: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Featured Status</Label>
+                      <Select
+                        value={shop.featured ? 'true' : 'false'}
+                        onValueChange={(value) => setShop({ ...shop, featured: value === 'true' })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="false">Standard</SelectItem>
+                          <SelectItem value="true">Featured</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
 
