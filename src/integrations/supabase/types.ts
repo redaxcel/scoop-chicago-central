@@ -106,6 +106,33 @@ export type Database = {
           },
         ]
       }
+      event_registrations: {
+        Row: {
+          created_at: string
+          email: string
+          event_id: string
+          id: string
+          name: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          event_id: string
+          id?: string
+          name?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          event_id?: string
+          id?: string
+          name?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string
@@ -181,10 +208,14 @@ export type Database = {
           owner_profile_id: string | null
           phone: string | null
           pricing: Database["public"]["Enums"]["price_level"] | null
+          seo_description: string | null
+          seo_keywords: string | null
+          seo_title: string | null
           state: string
           status: Database["public"]["Enums"]["shop_status"] | null
           twitter_url: string | null
           updated_at: string
+          website_follow: boolean | null
           website_url: string | null
           zip_code: string | null
         }
@@ -209,10 +240,14 @@ export type Database = {
           owner_profile_id?: string | null
           phone?: string | null
           pricing?: Database["public"]["Enums"]["price_level"] | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
           state?: string
           status?: Database["public"]["Enums"]["shop_status"] | null
           twitter_url?: string | null
           updated_at?: string
+          website_follow?: boolean | null
           website_url?: string | null
           zip_code?: string | null
         }
@@ -237,10 +272,14 @@ export type Database = {
           owner_profile_id?: string | null
           phone?: string | null
           pricing?: Database["public"]["Enums"]["price_level"] | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
           state?: string
           status?: Database["public"]["Enums"]["shop_status"] | null
           twitter_url?: string | null
           updated_at?: string
+          website_follow?: boolean | null
           website_url?: string | null
           zip_code?: string | null
         }
@@ -409,6 +448,7 @@ export type Database = {
           id: string
           rating: number
           shop_id: string
+          status: string | null
           title: string | null
           updated_at: string
           user_id: string
@@ -420,6 +460,7 @@ export type Database = {
           id?: string
           rating: number
           shop_id: string
+          status?: string | null
           title?: string | null
           updated_at?: string
           user_id: string
@@ -431,6 +472,7 @@ export type Database = {
           id?: string
           rating?: number
           shop_id?: string
+          status?: string | null
           title?: string | null
           updated_at?: string
           user_id?: string
