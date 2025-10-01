@@ -1,1 +1,7 @@
 project_id = "ulytouctukvfhrxfpxvs"
+
+[functions.send-shop-notification]
+verify_jwt = false
+
+[functions.send-event-registration]
+verify_jwt = false

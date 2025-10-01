@@ -1,4 +1,4 @@
-title,coupon_code,discount_percent,discount_amount,valid_until,description,is_active
-10% Off Any Scoop,SAVE10,10,,2024-12-31,Save 10% on any ice cream scoop,true
-Free Topping Friday,FREETOP,,3.00,2024-08-31,Get a free topping with any purchase on Friday,true
-Summer Special,SUMMER25,25,,2024-09-30,25% off all premium flavors during summer,false
+title,description,coupon_code,discount_percent,discount_amount,valid_from,valid_until,terms_conditions,usage_limit,is_active,shop_id
+10% Off Any Scoop,Save 10% on any ice cream scoop,SAVE10,10,,2025-01-01,2025-12-31,Valid for in-store purchases only. Cannot be combined with other offers.,100,true,
+Free Topping Friday,Get a free topping with any purchase on Friday,FREETOP,,3.00,2025-01-01,2025-08-31,Valid Monday-Thursday only. Equal or lesser value.,50,true,
+Summer Special,25% off all premium flavors during summer,SUMMER25,25,,2025-06-01,2025-09-30,Limited to 2 scoops per customer.,75,true,

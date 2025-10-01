@@ -15,7 +15,9 @@ import EventsManager from "@/components/admin/EventsManager";
 import CouponsManager from "@/components/admin/CouponsManager";
 import PagesManager from "@/components/admin/PagesManager";
 import ReviewsManager from "@/components/admin/ReviewsManager";
+import UsersManager from "@/components/admin/UsersManager";
 import ImportExportManager from "@/components/admin/ImportExportManager";
+import { ShopSubmissionsManager } from "@/components/admin/ShopSubmissionsManager";
 
 interface DashboardStats {
   totalShops: number;
@@ -264,6 +266,7 @@ const AdminDashboard = () => {
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="shops">Shops</TabsTrigger>
+            <TabsTrigger value="submissions">Submissions</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
@@ -374,6 +377,16 @@ const AdminDashboard = () => {
             <ShopsManager />
           </TabsContent>
 
+          <TabsContent value="submissions">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold">Shop Submissions</h3>
+                <p className="text-muted-foreground">Review and approve new shop submissions</p>
+              </div>
+              <ShopSubmissionsManager />
+            </div>
+          </TabsContent>
+
           <TabsContent value="users">
             <div className="space-y-6">
               <div className="flex justify-between items-center">
@@ -386,30 +399,7 @@ const AdminDashboard = () => {
                   Add User
                 </Button>
               </div>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>User Statistics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div className="text-center p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{stats.totalUsers}</div>
-                      <div className="text-sm text-muted-foreground">Total Users</div>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">1</div>
-                      <div className="text-sm text-muted-foreground">Admins</div>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-purple-600">
-                        {Math.floor(stats.totalUsers * 0.8)}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Regular Users</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <UsersManager />
             </div>
           </TabsContent>
 
@@ -420,53 +410,8 @@ const AdminDashboard = () => {
                   <h3 className="text-lg font-semibold">Review Management</h3>
                   <p className="text-muted-foreground">Monitor and moderate user reviews</p>
                 </div>
-                <Button variant="outline">
-                  <Shield className="mr-2 h-4 w-4" />
-                  Moderation Queue
-                </Button>
               </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Review Statistics</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Total Reviews</span>
-                      <span className="font-medium">{stats.totalReviews}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Average Rating</span>
-                      <span className="font-medium">{stats.averageRating.toFixed(1)}/5</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">This Month</span>
-                      <span className="font-medium">+{Math.floor(stats.totalReviews * 0.2)}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Review Actions</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Flag className="mr-2 h-4 w-4" />
-                      Review Flagged Content
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <TrendingUp className="mr-2 h-4 w-4" />
-                      Export Review Data
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <BarChart3 className="mr-2 h-4 w-4" />
-                      Review Analytics
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
+              <ReviewsManager />
             </div>
           </TabsContent>
 
