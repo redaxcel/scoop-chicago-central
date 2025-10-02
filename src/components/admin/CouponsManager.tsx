@@ -32,6 +32,7 @@ export const CouponsManager = () => {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [newCoupon, setNewCoupon] = useState<Partial<CouponRow>>({ title: "", description: "", valid_until: "" });
+  const [editingCoupon, setEditingCoupon] = useState<CouponRow | null>(null);
 
   useEffect(() => { refresh(); }, []);
 
@@ -81,6 +82,58 @@ export const CouponsManager = () => {
     }
   };
 
+  const updateCoupon = async () => {
+    if (!editingCoupon || !newCoupon.title || !newCoupon.valid_until || !newCoupon.description) {
+      toast({ title: "Missing info", description: "Title, description and valid until are required", variant: "destructive" });
+      return;
+    }
+    setCreating(true);
+    const { error } = await supabase.from("coupons").update({
+      title: newCoupon.title,
+      description: newCoupon.description,
+      coupon_code: newCoupon.coupon_code || null,
+      discount_percent: newCoupon.discount_percent ?? null,
+      discount_amount: newCoupon.discount_amount ?? null,
+      valid_until: newCoupon.valid_until,
+      image_url: newCoupon.image_url || null,
+      gallery_images: newCoupon.gallery_images || null,
+      seo_title: newCoupon.seo_title || null,
+      seo_description: newCoupon.seo_description || null,
+      seo_keywords: newCoupon.seo_keywords || null,
+    }).eq("id", editingCoupon.id);
+    setCreating(false);
+    if (error) {
+      toast({ title: "Failed", description: "Could not update coupon", variant: "destructive" });
+    } else {
+      toast({ title: "Coupon updated" });
+      setNewCoupon({ title: "", description: "", valid_until: "" });
+      setEditingCoupon(null);
+      refresh();
+    }
+  };
+
+  const handleEdit = (coupon: CouponRow) => {
+    setEditingCoupon(coupon);
+    setNewCoupon({
+      title: coupon.title,
+      description: coupon.description,
+      coupon_code: coupon.coupon_code,
+      discount_percent: coupon.discount_percent,
+      discount_amount: coupon.discount_amount,
+      valid_until: coupon.valid_until,
+      image_url: coupon.image_url,
+      gallery_images: coupon.gallery_images,
+      seo_title: coupon.seo_title,
+      seo_description: coupon.seo_description,
+      seo_keywords: coupon.seo_keywords,
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingCoupon(null);
+    setNewCoupon({ title: "", description: "", valid_until: "" });
+  };
+
   const toggleActive = async (c: CouponRow) => {
     const { error } = await supabase.from("coupons").update({ is_active: !c.is_active }).eq("id", c.id);
     if (error) {
@@ -111,7 +164,9 @@ export const CouponsManager = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Gift className="h-5 w-5" /> Create New Coupon</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Gift className="h-5 w-5" /> {editingCoupon ? "Edit Coupon" : "Create New Coupon"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-3 gap-4">
@@ -188,9 +243,16 @@ export const CouponsManager = () => {
             </div>
           </div>
 
-          <Button onClick={createCoupon} disabled={creating}>
-            <Save className="h-4 w-4 mr-1"/> {creating ? 'Creating...' : 'Create Coupon'}
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={editingCoupon ? updateCoupon : createCoupon} disabled={creating}>
+              <Save className="h-4 w-4 mr-1"/> {creating ? (editingCoupon ? 'Updating...' : 'Creating...') : (editingCoupon ? 'Update Coupon' : 'Create Coupon')}
+            </Button>
+            {editingCoupon && (
+              <Button variant="outline" onClick={cancelEdit}>
+                Cancel
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -226,6 +288,9 @@ export const CouponsManager = () => {
                       <td className="py-2 pr-4"><Switch checked={!!c.is_active} onCheckedChange={() => toggleActive(c)} /></td>
                       <td className="py-2 pr-4">
                         <div className="flex gap-2 justify-end">
+                          <Button size="sm" variant="outline" onClick={() => handleEdit(c)}>
+                            Edit
+                          </Button>
                           <Button size="sm" variant="outline" onClick={() => deleteCoupon(c.id)}>
                             <Trash className="h-4 w-4 mr-1"/> Delete
                           </Button>

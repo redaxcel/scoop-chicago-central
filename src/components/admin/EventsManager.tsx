@@ -29,6 +29,7 @@ export const EventsManager = () => {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [newEvent, setNewEvent] = useState<Partial<EventRow>>({ title: "", event_date: "" });
+  const [editingEvent, setEditingEvent] = useState<EventRow | null>(null);
 
   useEffect(() => { refresh(); }, []);
 
@@ -76,6 +77,58 @@ export const EventsManager = () => {
     }
   };
 
+  const updateEvent = async () => {
+    if (!editingEvent || !newEvent.title || !newEvent.event_date) {
+      toast({ title: "Missing info", description: "Title and date are required", variant: "destructive" });
+      return;
+    }
+    setCreating(true);
+    const { error } = await supabase.from("events").update({
+      title: newEvent.title,
+      description: newEvent.description || null,
+      event_date: newEvent.event_date,
+      end_date: newEvent.end_date || null,
+      is_featured: newEvent.is_featured ?? false,
+      location: newEvent.location || null,
+      image_url: newEvent.image_url || null,
+      gallery_images: newEvent.gallery_images || null,
+      seo_title: newEvent.seo_title || null,
+      seo_description: newEvent.seo_description || null,
+      seo_keywords: newEvent.seo_keywords || null,
+    }).eq("id", editingEvent.id);
+    setCreating(false);
+    if (error) {
+      toast({ title: "Failed", description: "Could not update event", variant: "destructive" });
+    } else {
+      toast({ title: "Event updated" });
+      setNewEvent({ title: "", event_date: "" });
+      setEditingEvent(null);
+      refresh();
+    }
+  };
+
+  const handleEdit = (event: EventRow) => {
+    setEditingEvent(event);
+    setNewEvent({
+      title: event.title,
+      description: event.description,
+      event_date: event.event_date,
+      end_date: event.end_date,
+      is_featured: event.is_featured,
+      location: event.location,
+      image_url: event.image_url,
+      gallery_images: event.gallery_images,
+      seo_title: event.seo_title,
+      seo_description: event.seo_description,
+      seo_keywords: event.seo_keywords,
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingEvent(null);
+    setNewEvent({ title: "", event_date: "" });
+  };
+
   const deleteEvent = async (id: string) => {
     const { error } = await supabase.from("events").delete().eq("id", id);
     if (error) {
@@ -97,7 +150,9 @@ export const EventsManager = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Plus className="h-5 w-5" /> Create New Event</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5" /> {editingEvent ? "Edit Event" : "Create New Event"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-3 gap-4">
@@ -163,9 +218,16 @@ export const EventsManager = () => {
             </div>
           </div>
 
-          <Button onClick={createEvent} disabled={creating}>
-            <Save className="h-4 w-4 mr-1"/> {creating ? 'Creating...' : 'Create Event'}
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={editingEvent ? updateEvent : createEvent} disabled={creating}>
+              <Save className="h-4 w-4 mr-1"/> {creating ? (editingEvent ? 'Updating...' : 'Creating...') : (editingEvent ? 'Update Event' : 'Create Event')}
+            </Button>
+            {editingEvent && (
+              <Button variant="outline" onClick={cancelEdit}>
+                Cancel
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -186,9 +248,14 @@ export const EventsManager = () => {
                     <div className="font-medium">{e.title}</div>
                     <div className="text-xs text-muted-foreground">{new Date(e.event_date).toLocaleString()} {e.location ? `• ${e.location}` : ''}</div>
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => deleteEvent(e.id)}>
-                    <Trash className="h-4 w-4 mr-1"/> Delete
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => handleEdit(e)}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => deleteEvent(e.id)}>
+                      <Trash className="h-4 w-4 mr-1"/> Delete
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
