@@ -21,6 +21,10 @@ interface Event {
   image_url?: string;
   registration_url?: string;
   is_featured: boolean;
+  gallery_images?: string[];
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string;
 }
 
 const EventDetail = () => {
@@ -143,10 +147,11 @@ const EventDetail = () => {
   return (
     <>
       <Helmet>
-        <title>{event.title} | Ice Cream Chicago Events</title>
-        <meta name="description" content={event.description} />
-        <meta property="og:title" content={event.title} />
-        <meta property="og:description" content={event.description} />
+        <title>{event.seo_title || `${event.title} | Ice Cream Chicago Events`}</title>
+        <meta name="description" content={event.seo_description || event.description || `Join us for ${event.title} in Chicago`} />
+        <meta name="keywords" content={event.seo_keywords || "ice cream event, chicago, ice cream"} />
+        <meta property="og:title" content={event.seo_title || event.title} />
+        <meta property="og:description" content={event.seo_description || event.description || ""} />
         {event.image_url && <meta property="og:image" content={event.image_url} />}
       </Helmet>
 

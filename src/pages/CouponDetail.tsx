@@ -25,6 +25,11 @@ interface Coupon {
   current_usage: number;
   is_active: boolean;
   shop_id: string;
+  image_url?: string;
+  gallery_images?: string[];
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string;
   ice_cream_shops?: {
     name: string;
     address: string;
@@ -122,10 +127,12 @@ const CouponDetail = () => {
   return (
     <>
       <Helmet>
-        <title>{coupon.title} | Ice Cream Chicago Coupons</title>
-        <meta name="description" content={coupon.description} />
-        <meta property="og:title" content={coupon.title} />
-        <meta property="og:description" content={coupon.description} />
+        <title>{coupon.seo_title || `${coupon.title} | Ice Cream Chicago Coupons`}</title>
+        <meta name="description" content={coupon.seo_description || coupon.description} />
+        <meta name="keywords" content={coupon.seo_keywords || "ice cream coupon, discount, chicago"} />
+        <meta property="og:title" content={coupon.seo_title || coupon.title} />
+        <meta property="og:description" content={coupon.seo_description || coupon.description} />
+        {coupon.image_url && <meta property="og:image" content={coupon.image_url} />}
       </Helmet>
 
       <div className="min-h-screen bg-background">

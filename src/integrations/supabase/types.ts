@@ -52,8 +52,13 @@ export type Database = {
           description: string
           discount_amount: number | null
           discount_percent: number | null
+          gallery_images: string[] | null
           id: string
+          image_url: string | null
           is_active: boolean | null
+          seo_description: string | null
+          seo_keywords: string | null
+          seo_title: string | null
           shop_id: string
           terms_conditions: string | null
           title: string
@@ -69,8 +74,13 @@ export type Database = {
           description: string
           discount_amount?: number | null
           discount_percent?: number | null
+          gallery_images?: string[] | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
           shop_id: string
           terms_conditions?: string | null
           title: string
@@ -86,8 +96,13 @@ export type Database = {
           description?: string
           discount_amount?: number | null
           discount_percent?: number | null
+          gallery_images?: string[] | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
           shop_id?: string
           terms_conditions?: string | null
           title?: string
@@ -139,11 +154,15 @@ export type Database = {
           description: string | null
           end_date: string | null
           event_date: string
+          gallery_images: string[] | null
           id: string
           image_url: string | null
           is_featured: boolean | null
           location: string | null
           registration_url: string | null
+          seo_description: string | null
+          seo_keywords: string | null
+          seo_title: string | null
           shop_id: string | null
           title: string
           updated_at: string
@@ -153,11 +172,15 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           event_date: string
+          gallery_images?: string[] | null
           id?: string
           image_url?: string | null
           is_featured?: boolean | null
           location?: string | null
           registration_url?: string | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
           shop_id?: string | null
           title: string
           updated_at?: string
@@ -167,11 +190,15 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           event_date?: string
+          gallery_images?: string[] | null
           id?: string
           image_url?: string | null
           is_featured?: boolean | null
           location?: string | null
           registration_url?: string | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
           shop_id?: string | null
           title?: string
           updated_at?: string

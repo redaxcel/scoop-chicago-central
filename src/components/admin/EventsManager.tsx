@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, Plus, Save, Trash } from "lucide-react";
@@ -10,10 +11,16 @@ import { Calendar, Plus, Save, Trash } from "lucide-react";
 interface EventRow {
   id: string;
   title: string;
+  description?: string | null;
   event_date: string;
   end_date?: string | null;
   is_featured?: boolean | null;
   location?: string | null;
+  image_url?: string | null;
+  gallery_images?: string[] | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
 }
 
 export const EventsManager = () => {
@@ -29,7 +36,7 @@ export const EventsManager = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("events")
-      .select("id,title,event_date,end_date,is_featured,location")
+      .select("*")
       .order("event_date", { ascending: false });
     if (error) {
       console.error(error);
@@ -48,10 +55,16 @@ export const EventsManager = () => {
     setCreating(true);
     const { error } = await supabase.from("events").insert({
       title: newEvent.title,
+      description: newEvent.description || null,
       event_date: newEvent.event_date,
       end_date: newEvent.end_date || null,
       is_featured: newEvent.is_featured ?? false,
       location: newEvent.location || null,
+      image_url: newEvent.image_url || null,
+      gallery_images: newEvent.gallery_images || null,
+      seo_title: newEvent.seo_title || null,
+      seo_description: newEvent.seo_description || null,
+      seo_keywords: newEvent.seo_keywords || null,
     });
     setCreating(false);
     if (error) {
@@ -89,18 +102,67 @@ export const EventsManager = () => {
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label>Title</Label>
+              <Label>Title *</Label>
               <Input value={newEvent.title || ''} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <Label>Date</Label>
+              <Label>Date *</Label>
               <Input type="datetime-local" value={newEvent.event_date || ''} onChange={(e) => setNewEvent({ ...newEvent, event_date: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <Label>Location (optional)</Label>
-              <Input value={newEvent.location || ''} onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })} />
+              <Label>Location</Label>
+              <Input value={newEvent.location || ''} onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })} placeholder="123 Main St, Chicago, IL" />
             </div>
           </div>
+          
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea 
+              value={newEvent.description || ''} 
+              onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })} 
+              placeholder="Event description..."
+              rows={3}
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Main Image URL</Label>
+              <Input value={newEvent.image_url || ''} onChange={(e) => setNewEvent({ ...newEvent, image_url: e.target.value })} placeholder="https://..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Gallery Images (comma-separated URLs)</Label>
+              <Input 
+                value={newEvent.gallery_images?.join(', ') || ''} 
+                onChange={(e) => setNewEvent({ ...newEvent, gallery_images: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
+                placeholder="https://..., https://..."
+              />
+            </div>
+          </div>
+
+          <div className="border-t pt-4 space-y-4">
+            <h4 className="font-semibold text-sm">SEO Settings</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>SEO Title</Label>
+                <Input value={newEvent.seo_title || ''} onChange={(e) => setNewEvent({ ...newEvent, seo_title: e.target.value })} placeholder="Custom page title" />
+              </div>
+              <div className="space-y-2">
+                <Label>SEO Keywords</Label>
+                <Input value={newEvent.seo_keywords || ''} onChange={(e) => setNewEvent({ ...newEvent, seo_keywords: e.target.value })} placeholder="ice cream, event, chicago" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>SEO Description</Label>
+              <Textarea 
+                value={newEvent.seo_description || ''} 
+                onChange={(e) => setNewEvent({ ...newEvent, seo_description: e.target.value })} 
+                placeholder="Meta description for search engines..."
+                rows={2}
+              />
+            </div>
+          </div>
+
           <Button onClick={createEvent} disabled={creating}>
             <Save className="h-4 w-4 mr-1"/> {creating ? 'Creating...' : 'Create Event'}
           </Button>

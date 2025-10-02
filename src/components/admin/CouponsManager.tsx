@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +19,11 @@ interface CouponRow {
   valid_until: string;
   is_active?: boolean | null;
   description: string;
+  image_url?: string | null;
+  gallery_images?: string[] | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
 }
 
 export const CouponsManager = () => {
@@ -33,7 +39,7 @@ export const CouponsManager = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("coupons")
-      .select("id,title,coupon_code,discount_percent,discount_amount,valid_from,valid_until,is_active,description")
+      .select("*")
       .order("created_at", { ascending: false });
     if (error) {
       console.error(error);
@@ -58,7 +64,12 @@ export const CouponsManager = () => {
       discount_amount: newCoupon.discount_amount ?? null,
       valid_until: newCoupon.valid_until,
       is_active: true,
-      shop_id: '00000000-0000-0000-0000-000000000000', // Platform-wide coupon
+      shop_id: '00000000-0000-0000-0000-000000000000',
+      image_url: newCoupon.image_url || null,
+      gallery_images: newCoupon.gallery_images || null,
+      seo_title: newCoupon.seo_title || null,
+      seo_description: newCoupon.seo_description || null,
+      seo_keywords: newCoupon.seo_keywords || null,
     });
     setCreating(false);
     if (error) {
@@ -105,32 +116,78 @@ export const CouponsManager = () => {
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label>Title</Label>
-              <Input value={newCoupon.title || ''} onChange={(e) => setNewCoupon({ ...newCoupon, title: e.target.value })} />
+              <Label>Title *</Label>
+              <Input value={newCoupon.title || ''} onChange={(e) => setNewCoupon({ ...newCoupon, title: e.target.value })} placeholder="20% Off Summer Special" />
             </div>
             <div className="space-y-2">
-              <Label>Coupon Code (optional)</Label>
-              <Input value={newCoupon.coupon_code || ''} onChange={(e) => setNewCoupon({ ...newCoupon, coupon_code: e.target.value })} />
+              <Label>Coupon Code</Label>
+              <Input value={newCoupon.coupon_code || ''} onChange={(e) => setNewCoupon({ ...newCoupon, coupon_code: e.target.value })} placeholder="SUMMER20" />
             </div>
             <div className="space-y-2">
-              <Label>Valid Until</Label>
+              <Label>Valid Until *</Label>
               <Input type="date" value={newCoupon.valid_until || ''} onChange={(e) => setNewCoupon({ ...newCoupon, valid_until: e.target.value })} />
             </div>
           </div>
-          <div className="grid md:grid-cols-3 gap-4">
+          
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Discount %</Label>
-              <Input type="number" value={newCoupon.discount_percent ?? ''} onChange={(e) => setNewCoupon({ ...newCoupon, discount_percent: e.target.value ? Number(e.target.value) : null })} />
+              <Input type="number" value={newCoupon.discount_percent ?? ''} onChange={(e) => setNewCoupon({ ...newCoupon, discount_percent: e.target.value ? Number(e.target.value) : null })} placeholder="20" />
             </div>
             <div className="space-y-2">
-              <Label>Discount Amount</Label>
-              <Input type="number" value={newCoupon.discount_amount ?? ''} onChange={(e) => setNewCoupon({ ...newCoupon, discount_amount: e.target.value ? Number(e.target.value) : null })} />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Input value={newCoupon.description || ''} onChange={(e) => setNewCoupon({ ...newCoupon, description: e.target.value })} />
+              <Label>Discount Amount ($)</Label>
+              <Input type="number" value={newCoupon.discount_amount ?? ''} onChange={(e) => setNewCoupon({ ...newCoupon, discount_amount: e.target.value ? Number(e.target.value) : null })} placeholder="5" />
             </div>
           </div>
+
+          <div className="space-y-2">
+            <Label>Description *</Label>
+            <Textarea 
+              value={newCoupon.description || ''} 
+              onChange={(e) => setNewCoupon({ ...newCoupon, description: e.target.value })} 
+              placeholder="Coupon description..."
+              rows={3}
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Main Image URL</Label>
+              <Input value={newCoupon.image_url || ''} onChange={(e) => setNewCoupon({ ...newCoupon, image_url: e.target.value })} placeholder="https://..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Gallery Images (comma-separated URLs)</Label>
+              <Input 
+                value={newCoupon.gallery_images?.join(', ') || ''} 
+                onChange={(e) => setNewCoupon({ ...newCoupon, gallery_images: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
+                placeholder="https://..., https://..."
+              />
+            </div>
+          </div>
+
+          <div className="border-t pt-4 space-y-4">
+            <h4 className="font-semibold text-sm">SEO Settings</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>SEO Title</Label>
+                <Input value={newCoupon.seo_title || ''} onChange={(e) => setNewCoupon({ ...newCoupon, seo_title: e.target.value })} placeholder="Custom page title" />
+              </div>
+              <div className="space-y-2">
+                <Label>SEO Keywords</Label>
+                <Input value={newCoupon.seo_keywords || ''} onChange={(e) => setNewCoupon({ ...newCoupon, seo_keywords: e.target.value })} placeholder="coupon, discount, ice cream" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>SEO Description</Label>
+              <Textarea 
+                value={newCoupon.seo_description || ''} 
+                onChange={(e) => setNewCoupon({ ...newCoupon, seo_description: e.target.value })} 
+                placeholder="Meta description for search engines..."
+                rows={2}
+              />
+            </div>
+          </div>
+
           <Button onClick={createCoupon} disabled={creating}>
             <Save className="h-4 w-4 mr-1"/> {creating ? 'Creating...' : 'Create Coupon'}
           </Button>
