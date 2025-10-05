@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { Calendar, MapPin, Clock, ArrowLeft, UserPlus } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { IceCreamMap } from "@/components/IceCreamMap";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,8 @@ interface Event {
   seo_title?: string;
   seo_description?: string;
   seo_keywords?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 const EventDetail = () => {
@@ -210,6 +213,32 @@ const EventDetail = () => {
                   <p className="text-lg">{event.description}</p>
                 </div>
               </div>
+
+              {event.latitude && event.longitude && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Event Location</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <IceCreamMap
+                      shops={[{
+                        id: event.id,
+                        name: event.title,
+                        latitude: event.latitude,
+                        longitude: event.longitude,
+                        address: event.location,
+                        city: '',
+                        state: '',
+                        description: event.description
+                      } as any]}
+                      selectedShopId={event.id}
+                      height="300px"
+                      zoom={15}
+                      center={[event.latitude, event.longitude]}
+                    />
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             <div>

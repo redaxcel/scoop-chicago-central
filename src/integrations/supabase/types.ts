@@ -158,7 +158,9 @@ export type Database = {
           id: string
           image_url: string | null
           is_featured: boolean | null
+          latitude: number | null
           location: string | null
+          longitude: number | null
           registration_url: string | null
           seo_description: string | null
           seo_keywords: string | null
@@ -176,7 +178,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_featured?: boolean | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           registration_url?: string | null
           seo_description?: string | null
           seo_keywords?: string | null
@@ -194,7 +198,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_featured?: boolean | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           registration_url?: string | null
           seo_description?: string | null
           seo_keywords?: string | null

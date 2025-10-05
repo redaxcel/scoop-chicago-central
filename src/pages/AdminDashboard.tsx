@@ -18,6 +18,7 @@ import ReviewsManager from "@/components/admin/ReviewsManager";
 import UsersManager from "@/components/admin/UsersManager";
 import ImportExportManager from "@/components/admin/ImportExportManager";
 import { ShopSubmissionsManager } from "@/components/admin/ShopSubmissionsManager";
+import { ModeratorsManager } from "@/components/admin/ModeratorsManager";
 
 interface DashboardStats {
   totalShops: number;
@@ -268,6 +269,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="shops">Shops</TabsTrigger>
             <TabsTrigger value="submissions">Submissions</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="moderators">Moderators</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="coupons">Coupons</TabsTrigger>
@@ -401,6 +403,10 @@ const AdminDashboard = () => {
               </div>
               <UsersManager />
             </div>
+          </TabsContent>
+
+          <TabsContent value="moderators">
+            <ModeratorsManager />
           </TabsContent>
 
           <TabsContent value="reviews">

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Building2, Check, Pause, PencilLine, Save, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ShopRow {
   id: string;
@@ -15,6 +16,7 @@ interface ShopRow {
   status: "active" | "pending" | "closed" | "suspended";
   city: string;
   state: string;
+  zip_code?: string | null;
   phone?: string | null;
   pricing?: "$" | "$$" | "$$$" | "$$$$" | null;
   website_url?: string | null;
@@ -25,6 +27,14 @@ interface ShopRow {
   latitude?: number | null;
   longitude?: number | null;
   featured?: boolean;
+  image_url?: string | null;
+  gallery_images?: string[] | null;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
+  twitter_url?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
 }
 
 const statusBadgeVariant = (status: ShopRow["status"]) => {
@@ -59,7 +69,7 @@ export const ShopsManager = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("ice_cream_shops")
-      .select("id,name,status,city,state,phone,pricing,website_url,address,description,hours,amenities,latitude,longitude,featured")
+      .select("*")
       .order("created_at", { ascending: false });
     if (error) {
       console.error(error);
@@ -194,7 +204,7 @@ export const ShopsManager = () => {
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Name</Label>
+                <Label>Name *</Label>
                 <Input value={selected.name} onChange={(e) => setSelected({ ...selected, name: e.target.value })} />
               </div>
               <div className="space-y-2">
@@ -202,17 +212,104 @@ export const ShopsManager = () => {
                 <Input value={selected.phone || ''} onChange={(e) => setSelected({ ...selected, phone: e.target.value })} />
               </div>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea 
+                value={selected.description || ''} 
+                onChange={(e) => setSelected({ ...selected, description: e.target.value })} 
+                placeholder="Shop description..."
+                rows={3}
+              />
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label>Address</Label>
+                <Label>Address *</Label>
                 <Input value={selected.address} onChange={(e) => setSelected({ ...selected, address: e.target.value })} />
               </div>
               <div className="space-y-2">
-                <Label>Website</Label>
-                <Input value={selected.website_url || ''} onChange={(e) => setSelected({ ...selected, website_url: e.target.value })} />
+                <Label>City *</Label>
+                <Input value={selected.city} onChange={(e) => setSelected({ ...selected, city: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label>State *</Label>
+                <Input value={selected.state} onChange={(e) => setSelected({ ...selected, state: e.target.value })} />
               </div>
             </div>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Zip Code</Label>
+                <Input value={selected.zip_code || ''} onChange={(e) => setSelected({ ...selected, zip_code: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label>Latitude</Label>
+                <Input 
+                  type="number" 
+                  step="any"
+                  value={selected.latitude || ''} 
+                  onChange={(e) => setSelected({ ...selected, latitude: e.target.value ? parseFloat(e.target.value) : null })} 
+                  placeholder="41.8781"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Longitude</Label>
+                <Input 
+                  type="number" 
+                  step="any"
+                  value={selected.longitude || ''} 
+                  onChange={(e) => setSelected({ ...selected, longitude: e.target.value ? parseFloat(e.target.value) : null })} 
+                  placeholder="-87.6298"
+                />
+              </div>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Website</Label>
+                <Input value={selected.website_url || ''} onChange={(e) => setSelected({ ...selected, website_url: e.target.value })} placeholder="https://..." />
+              </div>
+              <div className="space-y-2">
+                <Label>Main Image URL</Label>
+                <Input value={selected.image_url || ''} onChange={(e) => setSelected({ ...selected, image_url: e.target.value })} placeholder="https://..." />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Facebook URL</Label>
+                <Input value={selected.facebook_url || ''} onChange={(e) => setSelected({ ...selected, facebook_url: e.target.value })} placeholder="https://facebook.com/..." />
+              </div>
+              <div className="space-y-2">
+                <Label>Instagram URL</Label>
+                <Input value={selected.instagram_url || ''} onChange={(e) => setSelected({ ...selected, instagram_url: e.target.value })} placeholder="https://instagram.com/..." />
+              </div>
+              <div className="space-y-2">
+                <Label>Twitter URL</Label>
+                <Input value={selected.twitter_url || ''} onChange={(e) => setSelected({ ...selected, twitter_url: e.target.value })} placeholder="https://twitter.com/..." />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Gallery Images (comma-separated URLs)</Label>
+              <Input 
+                value={selected.gallery_images?.join(', ') || ''} 
+                onChange={(e) => setSelected({ ...selected, gallery_images: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
+                placeholder="https://..., https://..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Amenities (comma-separated)</Label>
+              <Input 
+                value={selected.amenities?.join(', ') || ''} 
+                onChange={(e) => setSelected({ ...selected, amenities: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
+                placeholder="parking, wifi, outdoor_seating"
+              />
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Pricing</Label>
                 <Select value={selected.pricing || ''} onValueChange={(v) => setSelected({ ...selected, pricing: v as any })}>
@@ -240,6 +337,41 @@ export const ShopsManager = () => {
                     <SelectItem value="closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Featured</Label>
+                <Select value={selected.featured ? 'true' : 'false'} onValueChange={(v) => setSelected({ ...selected, featured: v === 'true' })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Yes</SelectItem>
+                    <SelectItem value="false">No</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 space-y-4">
+              <h4 className="font-semibold text-sm">SEO Settings</h4>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>SEO Title</Label>
+                  <Input value={selected.seo_title || ''} onChange={(e) => setSelected({ ...selected, seo_title: e.target.value })} placeholder="Custom page title" />
+                </div>
+                <div className="space-y-2">
+                  <Label>SEO Keywords</Label>
+                  <Input value={selected.seo_keywords || ''} onChange={(e) => setSelected({ ...selected, seo_keywords: e.target.value })} placeholder="ice cream, chicago" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>SEO Description</Label>
+                <Textarea 
+                  value={selected.seo_description || ''} 
+                  onChange={(e) => setSelected({ ...selected, seo_description: e.target.value })} 
+                  placeholder="Meta description for search engines..."
+                  rows={2}
+                />
               </div>
             </div>
 

@@ -21,6 +21,8 @@ interface EventRow {
   seo_title?: string | null;
   seo_description?: string | null;
   seo_keywords?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export const EventsManager = () => {
@@ -66,6 +68,8 @@ export const EventsManager = () => {
       seo_title: newEvent.seo_title || null,
       seo_description: newEvent.seo_description || null,
       seo_keywords: newEvent.seo_keywords || null,
+      latitude: newEvent.latitude || null,
+      longitude: newEvent.longitude || null,
     });
     setCreating(false);
     if (error) {
@@ -95,6 +99,8 @@ export const EventsManager = () => {
       seo_title: newEvent.seo_title || null,
       seo_description: newEvent.seo_description || null,
       seo_keywords: newEvent.seo_keywords || null,
+      latitude: newEvent.latitude || null,
+      longitude: newEvent.longitude || null,
     }).eq("id", editingEvent.id);
     setCreating(false);
     if (error) {
@@ -121,6 +127,8 @@ export const EventsManager = () => {
       seo_title: event.seo_title,
       seo_description: event.seo_description,
       seo_keywords: event.seo_keywords,
+      latitude: event.latitude,
+      longitude: event.longitude,
     });
   };
 
@@ -191,6 +199,29 @@ export const EventsManager = () => {
                 value={newEvent.gallery_images?.join(', ') || ''} 
                 onChange={(e) => setNewEvent({ ...newEvent, gallery_images: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
                 placeholder="https://..., https://..."
+              />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Latitude</Label>
+              <Input 
+                type="number" 
+                step="any"
+                value={newEvent.latitude || ''} 
+                onChange={(e) => setNewEvent({ ...newEvent, latitude: e.target.value ? parseFloat(e.target.value) : undefined })} 
+                placeholder="41.8781"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Longitude</Label>
+              <Input 
+                type="number" 
+                step="any"
+                value={newEvent.longitude || ''} 
+                onChange={(e) => setNewEvent({ ...newEvent, longitude: e.target.value ? parseFloat(e.target.value) : undefined })} 
+                placeholder="-87.6298"
               />
             </div>
           </div>
