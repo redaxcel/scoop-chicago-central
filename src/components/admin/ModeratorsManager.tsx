@@ -11,8 +11,8 @@ interface Profile {
   id: string;
   user_id: string;
   display_name?: string;
-  role: string;
   shop_id?: string;
+  roles?: Array<{ role: string }>;
 }
 
 interface Shop {
@@ -33,18 +33,42 @@ export const ModeratorsManager = () => {
   const fetchData = async () => {
     setLoading(true);
     
-    // Fetch all moderators
-    const { data: modsData, error: modsError } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("role", "moderator")
-      .order("display_name");
+    // Fetch all users with moderator role
+    const { data: rolesData, error: rolesError } = await supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "moderator");
 
-    if (modsError) {
-      console.error(modsError);
+    if (rolesError) {
+      console.error(rolesError);
       toast({ title: "Error", description: "Failed to load moderators", variant: "destructive" });
+      setLoading(false);
+      return;
+    }
+
+    const moderatorUserIds = rolesData?.map(r => r.user_id) || [];
+    
+    if (moderatorUserIds.length === 0) {
+      setModerators([]);
     } else {
-      setModerators((modsData as any) || []);
+      // Fetch profiles for those users
+      const { data: modsData, error: modsError } = await supabase
+        .from("profiles")
+        .select('*')
+        .in("user_id", moderatorUserIds)
+        .order("display_name");
+
+      if (modsError) {
+        console.error(modsError);
+        toast({ title: "Error", description: "Failed to load moderator profiles", variant: "destructive" });
+      } else {
+        // Add roles array to each moderator
+        const modsWithRoles = modsData?.map(mod => ({
+          ...mod,
+          roles: [{ role: 'moderator' as const }]
+        })) || [];
+        setModerators(modsWithRoles);
+      }
     }
 
     // Fetch all shops

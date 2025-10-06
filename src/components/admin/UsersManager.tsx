@@ -13,10 +13,10 @@ interface UserProfile {
   id: string;
   user_id: string;
   display_name: string;
-  role: 'admin' | 'moderator' | 'user';
   created_at: string;
   bio?: string;
   avatar_url?: string;
+  roles?: Array<{ role: 'admin' | 'moderator' | 'user' }>;
 }
 
 export const UsersManager = () => {
@@ -34,13 +34,28 @@ export const UsersManager = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // Fetch profiles
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setUsers(data || []);
+      if (profilesError) throw profilesError;
+
+      // Fetch all user roles
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
+
+      if (rolesError) throw rolesError;
+
+      // Combine the data
+      const usersWithRoles = profilesData?.map(profile => ({
+        ...profile,
+        roles: rolesData?.filter(r => r.user_id === profile.user_id) || []
+      })) || [];
+
+      setUsers(usersWithRoles);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({ title: "Error", description: "Failed to load users", variant: "destructive" });
@@ -49,13 +64,24 @@ export const UsersManager = () => {
     }
   };
 
-  const updateUserRole = async (userId: string, newRole: 'admin' | 'moderator' | 'user') => {
-    const { error } = await supabase
-      .from('profiles')
-      .update({ role: newRole })
-      .eq('id', userId);
+  const updateUserRole = async (profileId: string, userId: string, newRole: 'admin' | 'moderator' | 'user') => {
+    // Delete existing roles for this user
+    const { error: deleteError } = await supabase
+      .from('user_roles')
+      .delete()
+      .eq('user_id', userId);
 
-    if (error) {
+    if (deleteError) {
+      toast({ title: "Failed", description: "Could not update user role", variant: "destructive" });
+      return;
+    }
+
+    // Insert new role
+    const { error: insertError } = await supabase
+      .from('user_roles')
+      .insert({ user_id: userId, role: newRole });
+
+    if (insertError) {
       toast({ title: "Failed", description: "Could not update user role", variant: "destructive" });
     } else {
       toast({ title: "User role updated" });
@@ -67,27 +93,39 @@ export const UsersManager = () => {
   const saveUser = async () => {
     if (!selected) return;
     
-    const { error } = await supabase
+    // Update profile
+    const { error: profileError } = await supabase
       .from('profiles')
       .update({
         display_name: selected.display_name,
-        role: selected.role,
         bio: selected.bio
       })
       .eq('id', selected.id);
 
-    if (error) {
+    if (profileError) {
       toast({ title: "Failed", description: "Could not update user", variant: "destructive" });
-    } else {
-      toast({ title: "User updated successfully" });
-      fetchUsers();
-      setSelected(null);
+      return;
     }
+
+    // Update role if it changed
+    const currentRole = selected.roles?.[0]?.role;
+    if (currentRole) {
+      await updateUserRole(selected.id, selected.user_id, currentRole);
+    }
+
+    toast({ title: "User updated successfully" });
+    fetchUsers();
+    setSelected(null);
+  };
+
+  const getUserRole = (user: UserProfile): 'admin' | 'moderator' | 'user' => {
+    return user.roles?.[0]?.role || 'user';
   };
 
   const filtered = users.filter(user => {
     const matchesSearch = [user.display_name, user.bio].join(" ").toLowerCase().includes(search.toLowerCase());
-    const matchesRole = roleFilter === "all" ? true : user.role === roleFilter;
+    const userRole = getUserRole(user);
+    const matchesRole = roleFilter === "all" ? true : userRole === roleFilter;
     return matchesSearch && matchesRole;
   });
 
@@ -177,10 +215,10 @@ export const UsersManager = () => {
                         </div>
                       </td>
                       <td className="py-2 pr-4">
-                        <Badge variant={getRoleBadgeVariant(user.role)} className="capitalize">
+                        <Badge variant={getRoleBadgeVariant(getUserRole(user))} className="capitalize">
                           <div className="flex items-center gap-1">
-                            {getRoleIcon(user.role)}
-                            {user.role.replace('_', ' ')}
+                            {getRoleIcon(getUserRole(user))}
+                            {getUserRole(user).replace('_', ' ')}
                           </div>
                         </Badge>
                       </td>
@@ -222,7 +260,7 @@ export const UsersManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Admins</p>
-                <p className="text-2xl font-bold">{users.filter(u => u.role === 'admin').length}</p>
+                <p className="text-2xl font-bold">{users.filter(u => getUserRole(u) === 'admin').length}</p>
               </div>
               <Crown className="h-8 w-8 text-yellow-600" />
             </div>
@@ -234,7 +272,7 @@ export const UsersManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Moderators</p>
-                <p className="text-2xl font-bold">{users.filter(u => u.role === 'moderator').length}</p>
+                <p className="text-2xl font-bold">{users.filter(u => getUserRole(u) === 'moderator').length}</p>
               </div>
               <Shield className="h-8 w-8 text-green-600" />
             </div>
@@ -246,7 +284,7 @@ export const UsersManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Regular Users</p>
-                <p className="text-2xl font-bold">{users.filter(u => u.role === 'user').length}</p>
+                <p className="text-2xl font-bold">{users.filter(u => getUserRole(u) === 'user').length}</p>
               </div>
               <User className="h-8 w-8 text-purple-600" />
             </div>
@@ -272,8 +310,11 @@ export const UsersManager = () => {
               <div className="space-y-2">
                 <Label>Role</Label>
                 <Select 
-                  value={selected.role} 
-                  onValueChange={(value) => setSelected({ ...selected, role: value as any })}
+                  value={getUserRole(selected)} 
+                  onValueChange={(value) => setSelected({ 
+                    ...selected, 
+                    roles: [{ role: value as any }]
+                  })}
                 >
                   <SelectTrigger>
                     <SelectValue />

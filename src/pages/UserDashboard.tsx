@@ -60,9 +60,8 @@ const UserDashboard = () => {
 
         setProfile(profile);
 
-        if (profile?.role === 'user') {
-          await fetchUserData(user.id);
-        }
+        // All authenticated users can access their dashboard
+        await fetchUserData(user.id);
       }
     } catch (error) {
       console.error('Auth check failed:', error);

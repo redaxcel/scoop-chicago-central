@@ -33,12 +33,25 @@ export const Navigation = () => {
       setUser(user);
       
       if (user) {
+        // Fetch profile
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', user.id)
           .single();
-        setProfile(profile);
+
+        // Fetch user roles
+        const { data: rolesData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id);
+
+        const profileWithRoles = {
+          ...profile,
+          roles: rolesData || []
+        };
+
+        setProfile(profileWithRoles);
       }
     } catch (error) {
       console.error('Error checking auth:', error);
@@ -54,12 +67,13 @@ export const Navigation = () => {
   const getDashboardLink = () => {
     if (!profile) return null;
     
-    switch (profile.role) {
-      case 'admin':
-        return { href: '/admin', label: 'Admin Panel' };
-      default:
-        return { href: profile.shop_id ? '/shop-dashboard' : '/user-dashboard', label: profile.shop_id ? 'Shop Dashboard' : 'Dashboard' };
+    // Check if user has admin role
+    const isAdmin = profile.roles?.some((r: any) => r.role === 'admin');
+    if (isAdmin) {
+      return { href: '/admin', label: 'Admin Panel' };
     }
+    
+    return { href: profile.shop_id ? '/shop-dashboard' : '/user-dashboard', label: profile.shop_id ? 'Shop Dashboard' : 'Dashboard' };
   };
 
   const navigation = [

@@ -63,15 +63,29 @@ const AdminDashboard = () => {
       setUser(user);
 
       if (user) {
+        // Fetch profile
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', user.id)
           .single();
 
-        setProfile(profile);
+        // Fetch user roles
+        const { data: rolesData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id);
 
-        if (profile?.role === 'admin') {
+        const profileWithRoles = {
+          ...profile,
+          roles: rolesData || []
+        };
+
+        setProfile(profileWithRoles);
+
+        // Check if user has admin role
+        const isAdmin = rolesData?.some((r: any) => r.role === 'admin');
+        if (isAdmin) {
           fetchDashboardData();
         }
       }
@@ -192,7 +206,8 @@ const AdminDashboard = () => {
     );
   }
 
-  if (!user || profile?.role !== 'admin') {
+  const isAdmin = profile?.roles?.some((r: any) => r.role === 'admin');
+  if (!user || !isAdmin) {
     return <Navigate to="/auth" replace />;
   }
 
