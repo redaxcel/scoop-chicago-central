@@ -576,7 +576,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_profile_role: {
+        Args: { _role: Database["public"]["Enums"]["user_role"]; _uid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       page_type: "home" | "about" | "contact" | "custom"
