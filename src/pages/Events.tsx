@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Calendar, MapPin, ExternalLink, Users } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -128,14 +129,18 @@ const Events = () => {
                       </div>
                     </div>
 
-                    {event.registration_url && (
-                      <Button asChild className="w-full">
-                        <a href={event.registration_url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          Register Now
-                        </a>
+                    <div className="flex gap-2">
+                      <Button asChild className="flex-1">
+                        <Link to={`/events/${event.id}`}>View Details</Link>
                       </Button>
-                    )}
+                      {event.registration_url && (
+                        <Button variant="outline" size="icon" asChild>
+                          <a href={event.registration_url} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               ))}

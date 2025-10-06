@@ -125,7 +125,7 @@ export const ShopCard = ({ shop, rating = 4.5, reviewCount = 0 }: ShopCardProps)
 
         <div className="flex gap-2 pt-2">
           <Button asChild className="flex-1">
-            <Link to={`/shop/${shop.id}`}>View Details</Link>
+            <Link to={`/shops/${shop.id}`}>View Details</Link>
           </Button>
           {shop.website_url && (
             <Button variant="outline" size="icon" asChild>

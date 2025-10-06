@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Percent, Calendar, Copy, ExternalLink } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -186,18 +187,16 @@ const Coupons = () => {
                       </div>
                     )}
 
-                    {/* Action Button */}
-                    <div className="pt-2">
-                      {coupon.shop ? (
-                        <Button asChild className="w-full">
-                          <a href={`/shop/${coupon.shop.id}`}>
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Visit Shop
-                          </a>
-                        </Button>
-                      ) : (
-                        <Button className="w-full" disabled>
-                          Use This Deal
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 pt-2">
+                      <Button asChild className="flex-1">
+                        <Link to={`/coupons/${coupon.id}`}>View Details</Link>
+                      </Button>
+                      {coupon.shop && (
+                        <Button variant="outline" size="icon" asChild>
+                          <Link to={`/shops/${coupon.shop.id}`}>
+                            <ExternalLink className="h-4 w-4" />
+                          </Link>
                         </Button>
                       )}
                     </div>
