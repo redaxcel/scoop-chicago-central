@@ -19,6 +19,7 @@ import UsersManager from "@/components/admin/UsersManager";
 import ImportExportManager from "@/components/admin/ImportExportManager";
 import { ShopSubmissionsManager } from "@/components/admin/ShopSubmissionsManager";
 import { ModeratorsManager } from "@/components/admin/ModeratorsManager";
+import { EventRegistrationsManager } from "@/components/admin/EventRegistrationsManager";
 
 interface DashboardStats {
   totalShops: number;
@@ -287,6 +288,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="moderators">Moderators</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="registrations">Event Registrations</TabsTrigger>
             <TabsTrigger value="coupons">Coupons</TabsTrigger>
             <TabsTrigger value="seo">SEO</TabsTrigger>
             <TabsTrigger value="import">Import/Export</TabsTrigger>
@@ -438,6 +440,16 @@ const AdminDashboard = () => {
 
           <TabsContent value="events">
             <EventsManager />
+          </TabsContent>
+
+          <TabsContent value="registrations">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold">Event Registrations</h3>
+                <p className="text-muted-foreground">Manage event registrations and send email reminders</p>
+              </div>
+              <EventRegistrationsManager />
+            </div>
           </TabsContent>
 
           <TabsContent value="coupons">

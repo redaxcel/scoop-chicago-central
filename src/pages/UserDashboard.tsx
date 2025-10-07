@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
-import { Star, Heart, MessageSquare, User, Settings, BookOpen } from "lucide-react";
+import { Navigate, Link } from "react-router-dom";
+import { Star, Heart, MessageSquare, Calendar, Clock, MapPin } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -23,20 +23,36 @@ interface Review {
   };
 }
 
+interface EventRegistration {
+  id: string;
+  event_id: string;
+  created_at: string;
+  events: {
+    id: string;
+    title: string;
+    event_date: string;
+    location: string;
+    image_url?: string;
+  };
+}
+
 interface UserStats {
   totalReviews: number;
   averageRating: number;
   favoriteShops: number;
+  upcomingEvents: number;
 }
 
 const UserDashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [eventRegistrations, setEventRegistrations] = useState<EventRegistration[]>([]);
   const [stats, setStats] = useState<UserStats>({
     totalReviews: 0,
     averageRating: 0,
-    favoriteShops: 0
+    favoriteShops: 0,
+    upcomingEvents: 0
   });
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -86,18 +102,45 @@ const UserDashboard = () => {
 
       if (reviewsData) {
         setReviews(reviewsData);
-
-        const totalReviews = reviewsData.length;
-        const averageRating = totalReviews > 0
-          ? reviewsData.reduce((sum, review) => sum + review.rating, 0) / totalReviews
-          : 0;
-
-        setStats({
-          totalReviews,
-          averageRating,
-          favoriteShops: Math.floor(Math.random() * 5) + 1 // Mock data
-        });
       }
+
+      // Fetch event registrations with event details
+      const { data: registrationsData } = await supabase
+        .from('event_registrations')
+        .select(`
+          *,
+          events (
+            id,
+            title,
+            event_date,
+            location,
+            image_url
+          )
+        `)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (registrationsData) {
+        setEventRegistrations(registrationsData);
+      }
+
+      const totalReviews = reviewsData?.length || 0;
+      const averageRating = totalReviews > 0
+        ? reviewsData!.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+        : 0;
+
+      // Count upcoming events
+      const now = new Date();
+      const upcomingEvents = registrationsData?.filter(
+        reg => new Date(reg.events.event_date) > now
+      ).length || 0;
+
+      setStats({
+        totalReviews,
+        averageRating,
+        favoriteShops: Math.floor(Math.random() * 5) + 1, // Mock data
+        upcomingEvents
+      });
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -222,13 +265,13 @@ const UserDashboard = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Favorite Shops</CardTitle>
-              <Heart className="h-4 w-4 text-red-600" />
+              <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
+              <Calendar className="h-4 w-4 text-purple-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.favoriteShops}</div>
+              <div className="text-2xl font-bold">{stats.upcomingEvents}</div>
               <p className="text-xs text-muted-foreground">
-                Shops you've bookmarked
+                Events you're registered for
               </p>
             </CardContent>
           </Card>
@@ -238,6 +281,7 @@ const UserDashboard = () => {
         <Tabs defaultValue="reviews" className="space-y-4">
           <TabsList>
             <TabsTrigger value="reviews">My Reviews</TabsTrigger>
+            <TabsTrigger value="events">My Events</TabsTrigger>
             <TabsTrigger value="favorites">Favorites</TabsTrigger>
             <TabsTrigger value="profile">Profile Settings</TabsTrigger>
           </TabsList>
@@ -309,6 +353,102 @@ const UserDashboard = () => {
                     </p>
                     <Button asChild>
                       <a href="/shops">Browse Shops</a>
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="events" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>My Event Registrations ({eventRegistrations.length})</CardTitle>
+                <CardDescription>
+                  Events you've registered for
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {eventRegistrations.length > 0 ? (
+                  <div className="space-y-4">
+                    {eventRegistrations.map((registration) => {
+                      const eventDate = new Date(registration.events.event_date);
+                      const isUpcoming = eventDate > new Date();
+                      
+                      return (
+                        <div key={registration.id} className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                          <div className="flex flex-col sm:flex-row">
+                            {registration.events.image_url && (
+                              <img
+                                src={registration.events.image_url}
+                                alt={registration.events.title}
+                                className="w-full sm:w-48 h-32 object-cover"
+                              />
+                            )}
+                            <div className="flex-1 p-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <div>
+                                  <h4 className="font-semibold text-lg">{registration.events.title}</h4>
+                                  {isUpcoming ? (
+                                    <Badge className="mt-1">Upcoming</Badge>
+                                  ) : (
+                                    <Badge variant="secondary" className="mt-1">Past Event</Badge>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-2 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>
+                                    {eventDate.toLocaleDateString("en-US", {
+                                      weekday: "long",
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                    })}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Clock className="h-4 w-4" />
+                                  <span>
+                                    {eventDate.toLocaleTimeString("en-US", {
+                                      hour: "numeric",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <MapPin className="h-4 w-4" />
+                                  <span>{registration.events.location}</span>
+                                </div>
+                                <div className="text-xs mt-2">
+                                  Registered: {new Date(registration.created_at).toLocaleDateString()}
+                                </div>
+                              </div>
+
+                              {isUpcoming && (
+                                <Button asChild variant="outline" size="sm" className="mt-3">
+                                  <Link to={`/events/${registration.events.id}`}>
+                                    View Event Details
+                                  </Link>
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Calendar className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No Event Registrations</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Discover upcoming ice cream events and register to join!
+                    </p>
+                    <Button asChild>
+                      <Link to="/events">Browse Events</Link>
                     </Button>
                   </div>
                 )}

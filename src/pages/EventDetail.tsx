@@ -35,15 +35,24 @@ const EventDetail = () => {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
+  const [registrationCount, setRegistrationCount] = useState(0);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
+    checkAuth();
     if (id) {
       fetchEvent();
+      fetchRegistrationCount();
     }
   }, [id]);
+
+  const checkAuth = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUser(user);
+  };
 
   const fetchEvent = async () => {
     try {
@@ -67,6 +76,20 @@ const EventDetail = () => {
     }
   };
 
+  const fetchRegistrationCount = async () => {
+    try {
+      const { count, error } = await supabase
+        .from("event_registrations")
+        .select("*", { count: "exact", head: true })
+        .eq("event_id", id);
+
+      if (error) throw error;
+      setRegistrationCount(count || 0);
+    } catch (error) {
+      console.error("Error fetching registration count:", error);
+    }
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!event) return;
@@ -79,6 +102,7 @@ const EventDetail = () => {
           event_id: event.id,
           name,
           email,
+          user_id: currentUser?.id || null,
         });
 
       if (dbError) throw dbError;
@@ -107,6 +131,7 @@ const EventDetail = () => {
 
       setName("");
       setEmail("");
+      fetchRegistrationCount();
     } catch (error: any) {
       console.error("Registration error:", error);
       toast({
@@ -207,6 +232,12 @@ const EventDetail = () => {
                     <MapPin className="h-5 w-5 text-primary" />
                     <span>{event.location}</span>
                   </div>
+                  {registrationCount > 0 && (
+                    <div className="flex items-center gap-2">
+                      <UserPlus className="h-5 w-5 text-primary" />
+                      <span>{registrationCount} {registrationCount === 1 ? 'person' : 'people'} registered</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="prose prose-lg max-w-none">
