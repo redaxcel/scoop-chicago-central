@@ -121,7 +121,7 @@ const UserDashboard = () => {
         .order('created_at', { ascending: false });
 
       if (registrationsData) {
-        setEventRegistrations(registrationsData);
+        setEventRegistrations(registrationsData as any);
       }
 
       const totalReviews = reviewsData?.length || 0;
@@ -132,7 +132,7 @@ const UserDashboard = () => {
       // Count upcoming events
       const now = new Date();
       const upcomingEvents = registrationsData?.filter(
-        reg => new Date(reg.events.event_date) > now
+        (reg: any) => new Date(reg.events.event_date) > now
       ).length || 0;
 
       setStats({
