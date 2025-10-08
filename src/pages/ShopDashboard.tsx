@@ -41,6 +41,8 @@ interface Review {
   title?: string;
   content: string;
   created_at: string;
+  shop_response?: string;
+  shop_response_date?: string;
   profiles?: {
     display_name?: string;
   } | null;
@@ -52,6 +54,116 @@ interface ShopStats {
   monthlyViews: number;
   recentReviews: Review[];
 }
+
+const ReviewItem = ({ review, onResponseSubmit }: { 
+  review: Review; 
+  onResponseSubmit: (response: string) => Promise<void>; 
+}) => {
+  const [showResponse, setShowResponse] = useState(false);
+  const [responseText, setResponseText] = useState(review.shop_response || '');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!responseText.trim()) return;
+    setSubmitting(true);
+    await onResponseSubmit(responseText);
+    setSubmitting(false);
+    setShowResponse(false);
+  };
+
+  return (
+    <div className="border rounded-lg p-4">
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-medium">
+              {review.profiles?.display_name || 'Anonymous'}
+            </span>
+            <div className="flex">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`h-4 w-4 ${
+                    star <= review.rating
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'text-muted-foreground'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+          {review.title && (
+            <h4 className="font-medium text-sm mb-1">{review.title}</h4>
+          )}
+        </div>
+        <span className="text-xs text-muted-foreground">
+          {new Date(review.created_at).toLocaleDateString()}
+        </span>
+      </div>
+      <p className="text-sm text-muted-foreground mb-3">
+        {review.content}
+      </p>
+
+      {review.shop_response && !showResponse && (
+        <div className="bg-muted/50 p-3 rounded-lg mt-3 border-l-4 border-primary">
+          <div className="flex items-center gap-2 mb-2">
+            <Building2 className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">Shop Response</span>
+            {review.shop_response_date && (
+              <span className="text-xs text-muted-foreground">
+                • {new Date(review.shop_response_date).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground">{review.shop_response}</p>
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="mt-2"
+            onClick={() => {
+              setShowResponse(true);
+              setResponseText(review.shop_response || '');
+            }}
+          >
+            Edit Response
+          </Button>
+        </div>
+      )}
+
+      {(!review.shop_response || showResponse) && (
+        <div className="space-y-3 mt-3">
+          <Textarea
+            placeholder="Write your response to this review..."
+            value={responseText}
+            onChange={(e) => setResponseText(e.target.value)}
+            rows={3}
+          />
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              onClick={handleSubmit}
+              disabled={submitting || !responseText.trim()}
+            >
+              {submitting ? 'Submitting...' : review.shop_response ? 'Update Response' : 'Submit Response'}
+            </Button>
+            {showResponse && review.shop_response && (
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => {
+                  setShowResponse(false);
+                  setResponseText(review.shop_response || '');
+                }}
+              >
+                Cancel
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const ShopDashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -574,41 +686,37 @@ const ShopDashboard = () => {
                 {stats.recentReviews.length > 0 ? (
                   <div className="space-y-4">
                     {stats.recentReviews.map((review) => (
-                      <div key={review.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium">
-                                {review.profiles?.display_name || 'Anonymous'}
-                              </span>
-                              <div className="flex">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star
-                                    key={star}
-                                    className={`h-4 w-4 ${
-                                      star <= review.rating
-                                        ? 'fill-yellow-400 text-yellow-400'
-                                        : 'text-muted-foreground'
-                                    }`}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                            {review.title && (
-                              <h4 className="font-medium text-sm mb-1">{review.title}</h4>
-                            )}
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(review.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          {review.content}
-                        </p>
-                        <Button size="sm" variant="outline">
-                          Respond
-                        </Button>
-                      </div>
+                      <ReviewItem
+                        key={review.id}
+                        review={review}
+                        onResponseSubmit={async (response: string) => {
+                          try {
+                            const { error } = await supabase
+                              .from('reviews')
+                              .update({ 
+                                shop_response: response,
+                                shop_response_date: new Date().toISOString()
+                              })
+                              .eq('id', review.id);
+
+                            if (error) throw error;
+
+                            toast({
+                              title: "Response Submitted",
+                              description: "Your response has been posted successfully."
+                            });
+
+                            if (profile) await fetchShopData(profile.id);
+                          } catch (error) {
+                            console.error('Error submitting response:', error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to submit response.",
+                              variant: "destructive"
+                            });
+                          }
+                        }}
+                      />
                     ))}
                   </div>
                 ) : (

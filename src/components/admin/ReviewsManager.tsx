@@ -17,6 +17,8 @@ interface ReviewWithDetails {
   created_at: string;
   user_id: string;
   shop_id: string;
+  shop_response?: string;
+  shop_response_date?: string;
   display_name?: string;
   shop_name?: string;
 }
@@ -165,7 +167,22 @@ export const ReviewsManager = () => {
                   {review.title && (
                     <h4 className="font-medium mb-2">{review.title}</h4>
                   )}
-                  <p className="text-sm text-muted-foreground">{review.content}</p>
+                  <p className="text-sm text-muted-foreground mb-3">{review.content}</p>
+
+                  {review.shop_response && (
+                    <div className="bg-primary/5 p-3 rounded-lg border-l-4 border-primary mt-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">Shop Response</span>
+                        {review.shop_response_date && (
+                          <span className="text-xs text-muted-foreground">
+                            • {new Date(review.shop_response_date).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{review.shop_response}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

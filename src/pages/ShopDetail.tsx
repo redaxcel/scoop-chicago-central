@@ -40,6 +40,8 @@ interface Review {
   content: string;
   created_at: string;
   user_id: string;
+  shop_response?: string;
+  shop_response_date?: string;
   profiles?: {
     display_name?: string;
   } | null;
@@ -406,6 +408,20 @@ const ShopDetail = () => {
                           </span>
                         </div>
                         <p className="text-sm text-muted-foreground">{review.content}</p>
+                        
+                        {review.shop_response && (
+                          <div className="mt-3 bg-muted/50 p-3 rounded-lg border-l-4 border-primary">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm font-medium text-primary">Shop Response</span>
+                              {review.shop_response_date && (
+                                <span className="text-xs text-muted-foreground">
+                                  • {new Date(review.shop_response_date).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">{review.shop_response}</p>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

@@ -486,6 +486,8 @@ export type Database = {
           id: string
           rating: number
           shop_id: string
+          shop_response: string | null
+          shop_response_date: string | null
           status: string | null
           title: string | null
           updated_at: string
@@ -498,6 +500,8 @@ export type Database = {
           id?: string
           rating: number
           shop_id: string
+          shop_response?: string | null
+          shop_response_date?: string | null
           status?: string | null
           title?: string | null
           updated_at?: string
@@ -510,6 +514,8 @@ export type Database = {
           id?: string
           rating?: number
           shop_id?: string
+          shop_response?: string | null
+          shop_response_date?: string | null
           status?: string | null
           title?: string | null
           updated_at?: string
